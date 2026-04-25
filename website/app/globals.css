@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-teal: #00a63e;
+  --color-brand-navy: #1B2A4A;
+  --font-poppins: var(--font-poppins);
+  --animate-infinite-scroll: infinite-scroll 20s linear infinite;
+
+  @keyframes infinite-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+}
+
+.clip-path-ribbon {
+  clip-path: polygon(100% 0%, 92% 50%, 100% 100%, 0 100%, 0 0);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #1e293b;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-poppins), sans-serif;
+}
