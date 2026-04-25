@@ -1,0 +1,283 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==================== CMS ADMIN ====================
+
+enum CmsAdminRole {
+  SUPER_ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum CmsStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CONVERTED
+  REJECTED
+}
+
+// ==================== CMS ADMIN ====================
+
+model CmsAdmin {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  passwordHash String
+  name         String
+  role         CmsAdminRole @default(VIEWER)
+  isActive     Boolean      @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@map("cms_admins")
+}
+
+// ==================== CMS CATEGORY ====================
+
+model CmsCategory {
+  id            String           @id @default(cuid())
+  name          String
+  slug          String           @unique
+  imageUrl      String?
+  isActive      Boolean          @default(true)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  subCategories CmsSubCategory[]
+  blogs         CmsBlog[]
+  products      CmsProduct[]
+  leads         CmsLead[]
+  ads  CmsAd[]
+
+  @@map("cms_categories")
+}
+
+// ==================== CMS SUB CATEGORY ====================
+
+model CmsSubCategory {
+  id         String      @id @default(cuid())
+  name       String
+  slug       String      @unique
+  imageUrl   String?
+  isActive   Boolean     @default(true)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  categoryId String
+  category   CmsCategory @relation(fields: [categoryId], references: [id])
+  blogs      CmsBlog[]
+  products   CmsProduct[]
+
+  @@index([categoryId])
+  @@map("cms_sub_categories")
+}
+
+// ==================== CMS BLOG ====================
+
+model CmsBlog {
+  id             String          @id @default(cuid())
+  title          String
+  slug           String          @unique
+  excerpt        String?
+  content        String          @db.Text
+  coverImage     String?
+  tags           String[]        @default([])
+  author         String?
+  status         CmsStatus       @default(DRAFT)
+  publishedAt    DateTime?
+  seoTitle       String?
+  seoDescription String?         @db.Text
+  viewCount      Int             @default(0)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  categoryId    String?
+  category      CmsCategory?    @relation(fields: [categoryId], references: [id])
+
+  subCategoryId String?
+  subCategory   CmsSubCategory? @relation(fields: [subCategoryId], references: [id])
+
+  @@index([status])
+  @@index([publishedAt])
+  @@index([categoryId])
+  @@map("cms_blogs")
+}
+
+// ==================== CMS PARTNER ====================
+
+model CmsPartner {
+  id        String   @id @default(cuid())
+  name      String
+  imageUrl  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("cms_partners")
+}
+
+// ==================== CMS TESTIMONIAL ====================
+
+model CmsTestimonial {
+  id        String   @id @default(cuid())
+  name      String
+  role      String?
+  avatar    String?
+  content   String   @db.Text
+  rating    Int      @default(5)
+  featured  Boolean  @default(false)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("cms_testimonials")
+}
+
+// ==================== CMS PRODUCT ====================
+
+model CmsProduct {
+  id               String          @id @default(cuid())
+  name             String
+  slug             String          @unique
+  shortDescription String?
+  description      String?         @db.Text
+  image            String?
+
+  // Provider
+  provider         String?
+  providerLogo     String?
+
+  // Financial Details
+  interestRate     String?
+  processingFee    String?
+  minAmount        String?
+  maxAmount        String?
+  tenure           String?
+
+  // Rich Content
+  features         Json?
+  benefits         Json?
+  eligibility      Json?
+  formFields       Json?           // ← dynamic form fields
+
+  // CTA
+  applyUrl         String?
+
+  // Flags
+  status           CmsStatus       @default(DRAFT)
+  featured         Boolean         @default(false)
+  isBestSeller     Boolean         @default(false)
+  badge            String?
+  sortOrder        Int             @default(0)
+
+  // SEO
+  seoTitle         String?
+  seoDescription   String?         @db.Text
+
+  // Stats
+  viewCount        Int             @default(0)
+
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  // Relations
+  categoryId       String?
+  category         CmsCategory?    @relation(fields: [categoryId], references: [id])
+
+  subCategoryId    String?
+  subCategory      CmsSubCategory? @relation(fields: [subCategoryId], references: [id])
+
+  leads            CmsLead[]
+
+  @@index([status])
+  @@index([featured])
+  @@index([categoryId])
+  @@map("cms_products")
+}
+
+// ==================== CMS LEAD ====================
+
+model CmsLead {
+  id          String      @id @default(cuid())
+  name        String
+  email       String?
+  phone       String?
+  message     String?     @db.Text
+  customData  Json?       // ← dynamic fields data
+  status      LeadStatus  @default(NEW)
+  notes       String?     @db.Text
+  assignedTo  String?
+  source      String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  productId   String?
+  product     CmsProduct?  @relation(fields: [productId], references: [id])
+
+  categoryId  String?
+  category    CmsCategory? @relation(fields: [categoryId], references: [id])
+
+  @@index([productId])
+  @@index([status])
+  @@index([categoryId])
+  @@map("cms_leads")
+}
+
+
+// ==================== CMS CALCULATOR ====================
+
+
+// ==================== CMS AD ====================
+
+enum AdPlacement {
+  HOMEPAGE_TOP
+  HOMEPAGE_BOTTOM
+  BLOG_TOP
+  BLOG_BOTTOM
+  PRODUCT_PAGE
+  BETWEEN_CONTENT
+  CALCULATOR_TOP
+  CALCULATOR_BOTTOM
+  CATEGORY_TOP
+  CATEGORY_BOTTOM
+}
+
+model CmsAd {
+  id          String       @id @default(cuid())
+  title       String
+  image       String
+  link        String?
+  placement   AdPlacement[]
+  startDate   DateTime?
+  endDate     DateTime?
+  active      Boolean      @default(true)
+  clicks      Int          @default(0)
+  impressions Int          @default(0)
+  sortOrder   Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  categoryId  String?
+  category    CmsCategory? @relation(fields: [categoryId], references: [id])
+
+  @@index([active])
+  @@index([categoryId])
+  @@index([startDate, endDate])
+  @@map("cms_ads")
+}
