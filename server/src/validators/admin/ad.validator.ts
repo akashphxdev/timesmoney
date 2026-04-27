@@ -1,52 +1,61 @@
-const validPlacements = [
-  'HOMEPAGE_TOP', 'HOMEPAGE_BOTTOM', 'BLOG_TOP', 'BLOG_BOTTOM',
-  'PRODUCT_PAGE', 'BETWEEN_CONTENT', 'CALCULATOR_TOP',
-  'CALCULATOR_BOTTOM', 'CATEGORY_TOP', 'CATEGORY_BOTTOM',
+// src/validators/admin/ad.validator.ts
+
+const validPages = ['HOME', 'BLOG', 'PRODUCT', 'CATEGORY', 'CALCULATOR'];
+const validPositions = ['TOP', 'BOTTOM', 'BETWEEN_CONTENT', 'SIDEBAR'];
+const validSizes = [
+  'BANNER_728x90', 'BANNER_300x250', 'BANNER_300x600',
+  'BANNER_320x50', 'BANNER_160x600', 'BANNER_970x90', 'CUSTOM'
 ];
 
-export const validateCreateAd = (body: any) => {
+export const validateCreateAd = (body: any): string[] => {
   const errors: string[] = [];
 
-  if (!body.title) errors.push('Title is required');
+  if (!body.title || body.title.trim() === '') errors.push('Title is required');
+  if (!body.page) errors.push('Page is required');
+  else if (!validPages.includes(body.page)) errors.push('Invalid page value');
 
-  // placements array check
-  if (!body.placements) {
-    errors.push('At least one placement is required');
-  } else {
-    const placementsArray = Array.isArray(body.placements)
-      ? body.placements
-      : [body.placements];
+  if (!body.position) errors.push('Position is required');
+  else if (!validPositions.includes(body.position)) errors.push('Invalid position value');
 
-    if (placementsArray.length === 0) {
-      errors.push('At least one placement is required');
-    }
+  if (body.size && !validSizes.includes(body.size)) errors.push('Invalid size value');
 
-    const invalidPlacements = placementsArray.filter(
-      (p: string) => !validPlacements.includes(p)
-    );
-    if (invalidPlacements.length > 0) {
-      errors.push(`Invalid placements: ${invalidPlacements.join(', ')}`);
-    }
+  if (body.startDateTime && isNaN(Date.parse(body.startDateTime)))
+    errors.push('Invalid startDateTime');
+
+  if (body.endDateTime && isNaN(Date.parse(body.endDateTime)))
+    errors.push('Invalid endDateTime');
+
+  if (body.startDateTime && body.endDateTime) {
+    if (new Date(body.startDateTime) >= new Date(body.endDateTime))
+      errors.push('endDateTime must be after startDateTime');
   }
+
+  if (body.sortOrder !== undefined && isNaN(Number(body.sortOrder)))
+    errors.push('sortOrder must be a number');
 
   return errors;
 };
 
-export const validateUpdateAd = (body: any) => {
+export const validateUpdateAd = (body: any): string[] => {
   const errors: string[] = [];
 
-  if (body.placements !== undefined) {
-    const placementsArray = Array.isArray(body.placements)
-      ? body.placements
-      : [body.placements];
+  if (body.page && !validPages.includes(body.page)) errors.push('Invalid page value');
+  if (body.position && !validPositions.includes(body.position)) errors.push('Invalid position value');
+  if (body.size && !validSizes.includes(body.size)) errors.push('Invalid size value');
 
-    const invalidPlacements = placementsArray.filter(
-      (p: string) => !validPlacements.includes(p)
-    );
-    if (invalidPlacements.length > 0) {
-      errors.push(`Invalid placements: ${invalidPlacements.join(', ')}`);
-    }
+  if (body.startDateTime && isNaN(Date.parse(body.startDateTime)))
+    errors.push('Invalid startDateTime');
+
+  if (body.endDateTime && isNaN(Date.parse(body.endDateTime)))
+    errors.push('Invalid endDateTime');
+
+  if (body.startDateTime && body.endDateTime) {
+    if (new Date(body.startDateTime) >= new Date(body.endDateTime))
+      errors.push('endDateTime must be after startDateTime');
   }
+
+  if (body.sortOrder !== undefined && isNaN(Number(body.sortOrder)))
+    errors.push('sortOrder must be a number');
 
   return errors;
 };

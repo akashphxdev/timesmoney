@@ -11,15 +11,13 @@ import leadRoutes from './adminRoutes/lead.routes';
 import publicBlogRouter from './publicRoutes/public.blog.route';
 import dashboardRouter from './adminRoutes/dashboard.routes';
 import adRoutes from './adminRoutes/ad.routes';
+import adEventRoutes from './adminRoutes/ad-event.routes';
 
 import headerRoutes from './publicRoutes/header.routes';
 import homeRouter from './publicRoutes/home.route';
 import publicProductRouter from './publicRoutes/product.route';
 import publicLeadRouter from './publicRoutes/lead.route'
-// import publicCategoryRouter from './publicRoutes/publicCategoryRoutes';
-// import publicSubCategoryRouter from './publicRoutes/publicSubCategoryRoutes';
-
-
+import publicAds from './publicRoutes/ad.route'
 const router = Router();
 
 // Health Check
@@ -40,6 +38,8 @@ router.use('/products', productRoutes);
 router.use('/leads', leadRoutes);
 router.use('/dashboard', dashboardRouter);
 router.use('/ads', adRoutes);
+router.use('/ad-events', adEventRoutes);
+
 
 
 // Web/Public Routes
@@ -48,8 +48,7 @@ router.use('/web/blogs', publicBlogRouter);
 router.use('/public/home', homeRouter);
 router.use('/public/products', publicProductRouter);
 router.use('/public/leads', publicLeadRouter);
-// router.use('/public/categories', publicCategoryRouter);
-// router.use('/public/sub-categories', publicSubCategoryRouter);
+router.use('/public/ads' ,publicAds )
 router.use('/public', publicProductRouter);
 
 export default router;

@@ -1,4 +1,5 @@
 'use client';
+import AdBanner from '@/components/ads/AdBanner';
 import { useState, useCallback } from 'react';
 
 const formatINR = (n: number) => {
@@ -58,6 +59,7 @@ export default function CarLoanCalculator() {
             <div className="flex items-center gap-2 mb-4">
               <span className="text-[11px] font-semibold tracking-widest uppercase text-brand-teal border border-brand-teal/30 bg-brand-teal/5 px-3 py-1 rounded-full">Car Loan Details</span>
             </div>
+            <AdBanner page="CALCULATOR" position="TOP" />
             <div className="bg-white border border-gray-100 rounded-2xl px-6 shadow-sm">
               {[
                 { label: 'Car Price (On-road)', value: carPrice, min: 100000, max: 10000000, step: 10000, prefix: '₹', onChange: setCarPrice, minLabel: '₹1L', maxLabel: '₹1 Cr' },

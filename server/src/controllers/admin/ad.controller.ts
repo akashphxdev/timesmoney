@@ -1,6 +1,14 @@
+// src/controllers/admin/ad.controller.ts
 import { Request, Response } from 'express';
 import { validateCreateAd, validateUpdateAd } from '../../validators/admin/ad.validator';
-import { getAllAds, getAdById, createAd, updateAd, deleteAd } from '../../services/admin/ad.service';
+import {
+  getAllAds,
+  getAdById,
+  createAd,
+  updateAd,
+  deleteAd,
+  toggleAdStatus,
+} from '../../services/admin/ad.service';
 
 export const getAll = async (_req: Request, res: Response) => {
   try {
@@ -14,7 +22,8 @@ export const getAll = async (_req: Request, res: Response) => {
 
 export const getOne = async (req: Request, res: Response) => {
   try {
-    const ad = await getAdById(req.params.id as string);
+    const id = req.params.id as string;
+    const ad = await getAdById(id);
     res.json({ success: true, data: ad });
   } catch (error: unknown) {
     const err = error as Error;
@@ -25,10 +34,12 @@ export const getOne = async (req: Request, res: Response) => {
 export const create = async (req: Request, res: Response) => {
   try {
     const errors = validateCreateAd(req.body);
-    if (errors.length > 0) return res.status(400).json({ success: false, errors });
-
-    if (!req.file) return res.status(400).json({ success: false, message: 'Image is required' });
-
+    if (errors.length > 0) {
+      return res.status(400).json({ success: false, errors });
+    }
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'Ad image is required' });
+    }
     const image = `/uploads/ads/${req.file.filename}`;
     const ad = await createAd({ ...req.body, image });
     res.status(201).json({ success: true, message: 'Ad created', data: ad });
@@ -40,11 +51,13 @@ export const create = async (req: Request, res: Response) => {
 
 export const update = async (req: Request, res: Response) => {
   try {
+    const id = req.params.id as string;
     const errors = validateUpdateAd(req.body);
-    if (errors.length > 0) return res.status(400).json({ success: false, errors });
-
+    if (errors.length > 0) {
+      return res.status(400).json({ success: false, errors });
+    }
     const newImage = req.file ? `/uploads/ads/${req.file.filename}` : undefined;
-    const ad = await updateAd(req.params.id as string, req.body, newImage);
+    const ad = await updateAd(id, req.body, newImage);
     res.json({ success: true, message: 'Ad updated', data: ad });
   } catch (error: unknown) {
     const err = error as Error;
@@ -54,8 +67,20 @@ export const update = async (req: Request, res: Response) => {
 
 export const remove = async (req: Request, res: Response) => {
   try {
-    const result = await deleteAd(req.params.id as string);
+    const id = req.params.id as string;
+    const result = await deleteAd(id);
     res.json({ success: true, message: result.message });
+  } catch (error: unknown) {
+    const err = error as Error;
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+export const toggle = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const ad = await toggleAdStatus(id);
+    res.json({ success: true, message: `Ad ${ad.active ? 'activated' : 'deactivated'}`, data: ad });
   } catch (error: unknown) {
     const err = error as Error;
     res.status(400).json({ success: false, message: err.message });

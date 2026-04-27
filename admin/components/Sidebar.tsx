@@ -13,6 +13,7 @@ import {
   AiOutlineSetting,
   AiOutlineTeam,
   AiOutlineMessage,
+  AiOutlineCalendar
 } from 'react-icons/ai';
 
 const menuItems = [
@@ -26,7 +27,9 @@ const menuItems = [
 
   { name: 'Our Partners', icon: AiOutlineTeam, href: '/our-partners' },
 
-  { name: 'Ads', icon: AiOutlinePicture, href: '/ads' },
+  { name: 'Ad Management', icon: AiOutlinePicture, href: '/ads' },
+
+ { name: 'Ad Events', icon: AiOutlineCalendar, href: '/ads-events' },
 
   { name: 'Testimonials', icon: AiOutlineMessage, href: '/testimonials' },
 

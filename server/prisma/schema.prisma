@@ -60,7 +60,7 @@ model CmsCategory {
   blogs         CmsBlog[]
   products      CmsProduct[]
   leads         CmsLead[]
-  ads  CmsAd[]
+ 
 
   @@map("cms_categories")
 }
@@ -239,45 +239,82 @@ model CmsLead {
   @@map("cms_leads")
 }
 
-
-// ==================== CMS CALCULATOR ====================
-
-
 // ==================== CMS AD ====================
 
-enum AdPlacement {
-  HOMEPAGE_TOP
-  HOMEPAGE_BOTTOM
-  BLOG_TOP
-  BLOG_BOTTOM
-  PRODUCT_PAGE
+enum AdPage {
+  HOME
+  BLOG
+  PRODUCT
+  CATEGORY
+  CALCULATOR
+}
+
+enum AdPosition {
+  TOP
+  BOTTOM
   BETWEEN_CONTENT
-  CALCULATOR_TOP
-  CALCULATOR_BOTTOM
-  CATEGORY_TOP
-  CATEGORY_BOTTOM
+  SIDEBAR
+}
+
+enum AdSize {
+  BANNER_728x90
+  BANNER_300x250
+  BANNER_300x600
+  BANNER_320x50
+  BANNER_160x600
+  BANNER_970x90
+  CUSTOM
+}
+
+enum AdEventType {
+  CLICK
+  IMPRESSION
 }
 
 model CmsAd {
-  id          String       @id @default(cuid())
-  title       String
-  image       String
-  link        String?
-  placement   AdPlacement[]
-  startDate   DateTime?
-  endDate     DateTime?
-  active      Boolean      @default(true)
-  clicks      Int          @default(0)
-  impressions Int          @default(0)
-  sortOrder   Int          @default(0)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id            String       @id @default(cuid())
+  title         String
+  page          AdPage
+  position      AdPosition
+  size          AdSize       @default(BANNER_300x250)
+  startDateTime DateTime?
+  endDateTime   DateTime?
+  link          String?
+  image         String
+  active        Boolean      @default(true)
+  sortOrder     Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
-  categoryId  String?
-  category    CmsCategory? @relation(fields: [categoryId], references: [id])
+  events        CmsAdEvent[]
 
   @@index([active])
-  @@index([categoryId])
-  @@index([startDate, endDate])
+  @@index([page])
   @@map("cms_ads")
+}
+
+// ==================== CMS AD EVENT ====================
+
+model CmsAdEvent {
+  id          String       @id @default(cuid())
+  adId        String
+  ad          CmsAd        @relation(fields: [adId], references: [id])
+  type        AdEventType
+  isUnique    Boolean      @default(false)
+  ip          String?
+  sessionId   String?
+  userAgent   String?
+  deviceType  String?
+  page        String?
+  referrer    String?
+  country     String?
+  createdAt   DateTime     @default(now())
+
+  @@index([adId])
+  @@index([type])
+  @@index([isUnique])
+  @@index([sessionId])
+  @@index([createdAt])
+  @@index([deviceType])
+  @@map("cms_ad_events")
 }

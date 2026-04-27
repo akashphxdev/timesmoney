@@ -2,8 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import {
-  AiOutlineUser,
-  AiOutlineSetting,
   AiOutlineLogout,
 } from 'react-icons/ai';
 import { usePathname, useRouter } from 'next/navigation';
@@ -16,6 +14,7 @@ const pageTitles: Record<string, string> = {
   '/leads': 'Leads',
   '/our-partners': 'Our Partners',
   '/ads': 'Ads',
+  '/ads-events' : 'Ads Events',
   '/testimonials': 'Testimonials',
   '/admins': 'Admins',
   '/settings': 'Settings',
