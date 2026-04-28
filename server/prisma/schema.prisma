@@ -244,8 +244,12 @@ model CmsLead {
 enum AdPage {
   HOME
   BLOG
+  BLOG_DETAIL      
   PRODUCT
+  PRODUCT_DETAIL   
   CATEGORY
+  SUB_CATEGORY     
+  TOOLS            
   CALCULATOR
 }
 
@@ -274,8 +278,10 @@ enum AdEventType {
 model CmsAd {
   id            String       @id @default(cuid())
   title         String
-  page          AdPage
-  position      AdPosition
+  pages         AdPage[]
+  positions     AdPosition[]
+  customWidth   Int?
+  customHeight  Int?
   size          AdSize       @default(BANNER_300x250)
   startDateTime DateTime?
   endDateTime   DateTime?
@@ -289,7 +295,6 @@ model CmsAd {
   events        CmsAdEvent[]
 
   @@index([active])
-  @@index([page])
   @@map("cms_ads")
 }
 

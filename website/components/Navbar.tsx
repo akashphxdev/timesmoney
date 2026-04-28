@@ -56,6 +56,16 @@ export const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMobileSection, setOpenMobileSection] = useState<string | null>(null);
 
+  // Body scroll lock when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
+
   useEffect(() => {
     const fetchHeaderData = async () => {
       try {
@@ -119,9 +129,28 @@ export const Navbar = () => {
         .nav-chevron {
           transition: transform 0.2s ease;
         }
+
+        /* Mobile menu slide-in animation */
+        @keyframes mobileSlideIn {
+          from { opacity: 0; transform: translateY(-8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .mobile-menu-animate {
+          animation: mobileSlideIn 0.2s ease forwards;
+        }
+
+        /* Mobile submenu expand */
+        @keyframes subExpand {
+          from { opacity: 0; max-height: 0; }
+          to   { opacity: 1; max-height: 500px; }
+        }
+        .sub-expand {
+          animation: subExpand 0.25s ease forwards;
+          overflow: hidden;
+        }
       `}</style>
 
-      {/* Topbar */}
+      {/* Topbar — desktop only (unchanged) */}
       <div className="bg-gray-50 border-b border-gray-100 py-1 hidden md:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-end items-center space-x-6">
           <a
@@ -154,7 +183,7 @@ export const Navbar = () => {
           <div className="flex justify-between items-center h-14">
 
             {/* Logo */}
-            <Link href="/" className="flex items-center cursor-pointer">
+            <Link href="/" className="flex items-center cursor-pointer flex-shrink-0">
               <span className="text-xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
                 <span className="text-gray-900">T</span>
                 <span className="text-yellow-600 font-black">₹</span>
@@ -163,10 +192,9 @@ export const Navbar = () => {
               </span>
             </Link>
 
-            {/* Desktop Nav Links */}
+            {/* Desktop Nav Links — unchanged */}
             <div className="hidden md:flex items-center space-x-1">
 
-              {/* Dynamic Categories */}
               {categories.map((category) => (
                 <div key={category.id} className="nav-item relative px-1 py-2">
                   <Link href={`/${category.slug}`}>
@@ -212,7 +240,7 @@ export const Navbar = () => {
 
               {/* Tools (Static) */}
               <div className="nav-item relative px-1 py-2">
-                <Link href="/tools">
+                <Link href="/">
                   <button
                     className="flex items-center space-x-1 text-slate-700 hover:text-brand-teal font-medium text-[13px] transition-colors px-2.5 py-1.5 rounded-md hover:bg-teal-50"
                     style={{ fontFamily: 'var(--font-body)' }}
@@ -311,9 +339,22 @@ export const Navbar = () => {
 
             </div>
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center">
-              <button className="text-slate-600 p-1" onClick={() => setMobileOpen(!mobileOpen)}>
+            {/* Mobile: Right side — Auth + Hamburger */}
+            <div className="md:hidden flex items-center space-x-2">
+              {/* Quick Sign In on mobile topbar */}
+              <a
+                href="#"
+                className="text-xs font-semibold text-slate-600 px-3 py-1.5 border border-gray-200 rounded-full hover:border-brand-teal hover:text-brand-teal transition-colors"
+                style={{ fontFamily: 'var(--font-body)' }}
+              >
+                Sign In
+              </a>
+              {/* Hamburger */}
+              <button
+                className="text-slate-600 p-2 rounded-md hover:bg-gray-100 transition-colors active:scale-95"
+                onClick={() => setMobileOpen(!mobileOpen)}
+                aria-label="Toggle menu"
+              >
                 {mobileOpen ? (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -329,99 +370,183 @@ export const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* ===================== MOBILE MENU ===================== */}
         {mobileOpen && (
-          <div className="md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-1">
+          <>
+            {/* Backdrop */}
+            <div
+              className="md:hidden fixed inset-0 top-[calc(3.5rem+1px)] bg-black/30 z-40"
+              onClick={() => setMobileOpen(false)}
+            />
 
-            {categories.map((category) => (
-              <div key={category.id}>
-                <button
-                  onClick={() => setOpenMobileSection(openMobileSection === category.id ? null : category.id)}
-                  className="w-full flex justify-between items-center px-3 py-2.5 text-sm font-medium text-slate-700 hover:text-brand-teal hover:bg-teal-50 rounded-lg transition-colors"
+            {/* Menu Panel */}
+            <div className="md:hidden mobile-menu-animate fixed left-0 right-0 top-[calc(3.5rem+1px)] z-50 bg-white border-t border-gray-100 shadow-xl overflow-y-auto"
+              style={{ maxHeight: 'calc(100dvh - 3.5rem - 1px)' }}
+            >
+              {/* Quick links bar — Talk to Expert & Get App (mobile) */}
+              <div className="flex items-center justify-center space-x-6 py-2.5 px-4 bg-gray-50 border-b border-gray-100">
+                <a
+                  href="tel:1800-123-4567"
+                  className="flex items-center space-x-1.5 text-xs font-semibold text-slate-500 hover:text-brand-teal transition-colors"
                   style={{ fontFamily: 'var(--font-body)' }}
                 >
-                  <span>{category.name}</span>
-                  {category.subCategories.length > 0 && (
-                    <svg className={`w-3.5 h-3.5 transition-transform ${openMobileSection === category.id ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5 text-brand-teal icon-phone" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  <span>Talk to Expert</span>
+                </a>
+                <div className="h-3 w-[1px] bg-gray-300" />
+                <a
+                  href="#"
+                  className="flex items-center space-x-1.5 text-xs font-semibold text-slate-500 hover:text-brand-teal transition-colors"
+                  style={{ fontFamily: 'var(--font-body)' }}
+                >
+                  <svg className="w-3.5 h-3.5 text-brand-teal icon-app" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  <span>Get The App</span>
+                </a>
+              </div>
+
+              {/* Nav Items */}
+              <div className="px-3 py-2 space-y-0.5">
+
+                {categories.map((category) => (
+                  <div key={category.id}>
+                    <button
+                      onClick={() => setOpenMobileSection(openMobileSection === category.id ? null : category.id)}
+                      className="w-full flex justify-between items-center px-3 py-3 text-sm font-medium text-slate-700 hover:text-brand-teal hover:bg-teal-50 rounded-xl transition-colors"
+                      style={{ fontFamily: 'var(--font-body)' }}
+                    >
+                      <span>{category.name}</span>
+                      {category.subCategories.length > 0 && (
+                        <svg
+                          className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${openMobileSection === category.id ? 'rotate-180 text-brand-teal' : 'text-slate-400'}`}
+                          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      )}
+                    </button>
+
+                    {openMobileSection === category.id && category.subCategories.length > 0 && (
+                      <div className="sub-expand ml-3 mb-1 border-l-2 border-teal-100 pl-3 space-y-0.5">
+                        {category.subCategories.map((sub) => (
+                          <Link
+                            key={sub.id}
+                            href={`/${category.slug}/${sub.slug}`}
+                            className="flex items-center px-3 py-2.5 text-sm text-slate-500 hover:text-brand-teal hover:bg-teal-50 rounded-lg transition-colors"
+                            style={{ fontFamily: 'var(--font-body)' }}
+                            onClick={() => setMobileOpen(false)}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-300 mr-2.5 flex-shrink-0" />
+                            {sub.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {/* Tools Mobile */}
+                <div>
+                  <button
+                    onClick={() => setOpenMobileSection(openMobileSection === 'tools' ? null : 'tools')}
+                    className="w-full flex justify-between items-center px-3 py-3 text-sm font-medium text-slate-700 hover:text-brand-teal hover:bg-teal-50 rounded-xl transition-colors"
+                    style={{ fontFamily: 'var(--font-body)' }}
+                  >
+                    <span>Tools</span>
+                    <svg
+                      className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${openMobileSection === 'tools' ? 'rotate-180 text-brand-teal' : 'text-slate-400'}`}
+                      fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
+                  </button>
+                  {openMobileSection === 'tools' && (
+                    <div className="sub-expand ml-3 mb-1 border-l-2 border-teal-100 pl-3 space-y-0.5 max-h-64 overflow-y-auto">
+                      {tools.map((tool) => (
+                        <Link
+                          key={tool.slug}
+                          href={`/tools/${tool.slug}`}
+                          className="flex items-center px-3 py-2.5 text-sm text-slate-500 hover:text-brand-teal hover:bg-teal-50 rounded-lg transition-colors"
+                          style={{ fontFamily: 'var(--font-body)' }}
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-slate-300 mr-2.5 flex-shrink-0" />
+                          {tool.name}
+                        </Link>
+                      ))}
+                    </div>
                   )}
-                </button>
-                {openMobileSection === category.id && category.subCategories.length > 0 && (
-                  <div className="ml-4 mt-1 space-y-1 border-l-2 border-teal-100 pl-3">
-                    {category.subCategories.map((sub) => (
-                      <Link key={sub.id} href={`/${category.slug}/${sub.slug}`} className="block px-2 py-2 text-sm text-slate-500 hover:text-brand-teal transition-colors" style={{ fontFamily: 'var(--font-body)' }} onClick={() => setMobileOpen(false)}>
-                        {sub.name}
+                </div>
+
+                {/* Blog Mobile */}
+                <div>
+                  <button
+                    onClick={() => setOpenMobileSection(openMobileSection === 'blog' ? null : 'blog')}
+                    className="w-full flex justify-between items-center px-3 py-3 text-sm font-medium text-slate-700 hover:text-brand-teal hover:bg-teal-50 rounded-xl transition-colors"
+                    style={{ fontFamily: 'var(--font-body)' }}
+                  >
+                    <span>Blog</span>
+                    {blogs.length > 0 && (
+                      <svg
+                        className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${openMobileSection === 'blog' ? 'rotate-180 text-brand-teal' : 'text-slate-400'}`}
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    )}
+                  </button>
+                  {openMobileSection === 'blog' && blogs.length > 0 && (
+                    <div className="sub-expand ml-3 mb-1 border-l-2 border-teal-100 pl-3 space-y-0.5">
+                      {blogs.slice(0, 6).map((blog) => (
+                        <Link
+                          key={blog.id}
+                          href={`/blog/${blog.slug}`}
+                          className="flex items-center px-3 py-2.5 text-sm text-slate-500 hover:text-brand-teal hover:bg-teal-50 rounded-lg transition-colors"
+                          style={{ fontFamily: 'var(--font-body)' }}
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-slate-300 mr-2.5 flex-shrink-0" />
+                          <span className="truncate">{blog.title}</span>
+                        </Link>
+                      ))}
+                      <Link
+                        href="/blog"
+                        className="flex items-center px-3 py-2.5 text-sm font-semibold text-brand-teal hover:bg-teal-50 rounded-lg transition-colors"
+                        style={{ fontFamily: 'var(--font-body)' }}
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        View All Blogs →
                       </Link>
-                    ))}
-                  </div>
-                )}
+                    </div>
+                  )}
+                </div>
+
               </div>
-            ))}
 
-            {/* Tools Mobile */}
-            <div>
-              <button
-                onClick={() => setOpenMobileSection(openMobileSection === 'tools' ? null : 'tools')}
-                className="w-full flex justify-between items-center px-3 py-2.5 text-sm font-medium text-slate-700 hover:text-brand-teal hover:bg-teal-50 rounded-lg transition-colors"
-                style={{ fontFamily: 'var(--font-body)' }}
-              >
-                <span>Tools</span>
-                <svg className={`w-3.5 h-3.5 transition-transform ${openMobileSection === 'tools' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {openMobileSection === 'tools' && (
-                <div className="ml-4 mt-1 space-y-1 border-l-2 border-teal-100 pl-3 max-h-60 overflow-y-auto">
-                  {tools.map((tool) => (
-                    <Link key={tool.slug} href={`/tools/${tool.slug}`} className="block px-2 py-2 text-sm text-slate-500 hover:text-brand-teal transition-colors" style={{ fontFamily: 'var(--font-body)' }} onClick={() => setMobileOpen(false)}>
-                      {tool.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
+              {/* Mobile Bottom Auth */}
+              <div className="sticky bottom-0 bg-white border-t border-gray-100 px-4 py-3 flex items-center space-x-3">
+                <a
+                  href="#"
+                  className="flex-1 text-center py-2.5 text-sm font-semibold text-slate-700 border border-gray-200 rounded-xl hover:text-brand-teal hover:border-brand-teal transition-colors"
+                  style={{ fontFamily: 'var(--font-body)' }}
+                >
+                  Sign In
+                </a>
+                <button
+                  className="flex-1 py-2.5 text-sm font-bold text-white bg-brand-teal rounded-xl hover:bg-teal-600 transition-colors active:scale-95 shadow-md"
+                  style={{ fontFamily: 'var(--font-body)' }}
+                >
+                  Sign Up
+                </button>
+              </div>
+
             </div>
-
-            {/* Blog Mobile */}
-            <div>
-              <button
-                onClick={() => setOpenMobileSection(openMobileSection === 'blog' ? null : 'blog')}
-                className="w-full flex justify-between items-center px-3 py-2.5 text-sm font-medium text-slate-700 hover:text-brand-teal hover:bg-teal-50 rounded-lg transition-colors"
-                style={{ fontFamily: 'var(--font-body)' }}
-              >
-                <span>Blog</span>
-                {blogs.length > 0 && (
-                  <svg className={`w-3.5 h-3.5 transition-transform ${openMobileSection === 'blog' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                )}
-              </button>
-              {openMobileSection === 'blog' && blogs.length > 0 && (
-                <div className="ml-4 mt-1 space-y-1 border-l-2 border-teal-100 pl-3">
-                  {blogs.slice(0, 6).map((blog) => (
-                    <Link key={blog.id} href={`/blog/${blog.slug}`} className="block px-2 py-2 text-sm text-slate-500 hover:text-brand-teal transition-colors truncate" style={{ fontFamily: 'var(--font-body)' }} onClick={() => setMobileOpen(false)}>
-                      {blog.title}
-                    </Link>
-                  ))}
-                  <Link href="/blog" className="block px-2 py-2 text-sm font-semibold text-brand-teal" style={{ fontFamily: 'var(--font-body)' }} onClick={() => setMobileOpen(false)}>
-                    View All Blogs
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Mobile Auth */}
-            <div className="pt-2 border-t border-gray-100 flex items-center space-x-3 px-3">
-              <a href="#" className="flex-1 text-center py-2 text-sm font-medium text-slate-700 border border-gray-200 rounded-lg hover:text-brand-teal hover:border-brand-teal transition-colors" style={{ fontFamily: 'var(--font-body)' }}>
-                Sign In
-              </a>
-              <button className="flex-1 py-2 text-sm font-bold text-white bg-brand-teal rounded-lg hover:bg-teal-600 transition-colors" style={{ fontFamily: 'var(--font-body)' }}>
-                Sign Up
-              </button>
-            </div>
-
-          </div>
+          </>
         )}
+
       </nav>
     </header>
   );

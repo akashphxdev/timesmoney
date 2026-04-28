@@ -30,6 +30,7 @@ export default function CarLoanCalculator() {
 
   return (
     <div className="font-sans">
+      <AdBanner page="CALCULATOR" position="TOP" />
       <div className="bg-brand-teal py-8 px-6 md:px-10 mb-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-3">
@@ -59,7 +60,7 @@ export default function CarLoanCalculator() {
             <div className="flex items-center gap-2 mb-4">
               <span className="text-[11px] font-semibold tracking-widest uppercase text-brand-teal border border-brand-teal/30 bg-brand-teal/5 px-3 py-1 rounded-full">Car Loan Details</span>
             </div>
-            <AdBanner page="CALCULATOR" position="TOP" />
+            
             <div className="bg-white border border-gray-100 rounded-2xl px-6 shadow-sm">
               {[
                 { label: 'Car Price (On-road)', value: carPrice, min: 100000, max: 10000000, step: 10000, prefix: '₹', onChange: setCarPrice, minLabel: '₹1L', maxLabel: '₹1 Cr' },
@@ -105,10 +106,13 @@ export default function CarLoanCalculator() {
                 ))}
               </div>
               <p className="text-[11px] text-slate-400 border-t border-gray-100 pt-4 leading-relaxed"><span className="font-semibold text-slate-500">Disclaimer:</span> Actual loan terms may vary. Insurance, RTO charges, and processing fees are not included.</p>
+              <AdBanner page="CALCULATOR" position="BOTTOM" className="mt-4" />  
+              
             </div>
           </div>
 
           <div className="flex flex-col gap-4 lg:sticky lg:top-24">
+            <AdBanner page="CALCULATOR" position="SIDEBAR" className="mb-2" />
             <div className="bg-brand-teal rounded-2xl p-6">
               <p className="text-[11px] uppercase tracking-widest text-white/65 mb-1">Monthly EMI</p>
               <p className="text-4xl font-bold text-white tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>{formatINR(emi)}</p>

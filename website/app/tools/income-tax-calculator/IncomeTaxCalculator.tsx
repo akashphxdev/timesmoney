@@ -1,5 +1,6 @@
 'use client';
 import { useState, useCallback } from 'react';
+import AdBanner from '@/components/ads/AdBanner';
 
 const formatINR = (n: number) => {
   n = Math.round(n);
@@ -46,6 +47,7 @@ export default function IncomeTaxCalculator() {
 
   return (
     <div className="font-sans">
+      <AdBanner page="CALCULATOR" position="TOP" />
       <div className="bg-brand-teal py-8 px-6 md:px-10 mb-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-3">
@@ -129,10 +131,12 @@ export default function IncomeTaxCalculator() {
               <h2 className="text-2xl text-slate-900 mb-3" style={{ fontFamily: 'var(--font-display)' }}>Old vs <span className="text-brand-teal">New Regime</span></h2>
               <p className="text-sm text-slate-500 leading-relaxed mb-5">The New Regime (introduced in FY21) offers lower tax rates but no deductions. The Old Regime allows deductions under 80C, 80D, HRA etc. If your total deductions exceed ~₹3.75L, the Old Regime is typically better.</p>
               <p className="text-[11px] text-slate-400 border-t border-gray-100 pt-4 leading-relaxed"><span className="font-semibold text-slate-500">Disclaimer:</span> This is an approximate calculator for FY 2024-25. Surcharge, professional tax, and other specific deductions are not included. Consult a CA for accurate filing.</p>
+              <AdBanner page="CALCULATOR" position="BOTTOM" className="mt-4" />
             </div>
           </div>
 
           <div className="flex flex-col gap-4 lg:sticky lg:top-24">
+             <AdBanner page="CALCULATOR" position="SIDEBAR" className="mb-2" />
             <div className={`rounded-2xl p-6 ${better === 'new' ? 'bg-brand-teal' : 'bg-amber-500'}`}>
               <p className="text-[11px] uppercase tracking-widest text-white/65 mb-1">Recommended Regime</p>
               <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-display)' }}>{better === 'new' ? 'New Regime' : 'Old Regime'}</p>

@@ -31,8 +31,18 @@ export const getOne = async (req: Request, res: Response) => {
   }
 };
 
+// src/controllers/admin/ad.controller.ts
+
 export const create = async (req: Request, res: Response) => {
   try {
+    // FormData mein arrays string ya array aa sakte hain — normalize karo
+    if (req.body.pages && !Array.isArray(req.body.pages)) {
+      req.body.pages = [req.body.pages];
+    }
+    if (req.body.positions && !Array.isArray(req.body.positions)) {
+      req.body.positions = [req.body.positions];
+    }
+
     const errors = validateCreateAd(req.body);
     if (errors.length > 0) {
       return res.status(400).json({ success: false, errors });
@@ -51,6 +61,13 @@ export const create = async (req: Request, res: Response) => {
 
 export const update = async (req: Request, res: Response) => {
   try {
+    if (req.body.pages && !Array.isArray(req.body.pages)) {
+      req.body.pages = [req.body.pages];
+    }
+    if (req.body.positions && !Array.isArray(req.body.positions)) {
+      req.body.positions = [req.body.positions];
+    }
+
     const id = req.params.id as string;
     const errors = validateUpdateAd(req.body);
     if (errors.length > 0) {

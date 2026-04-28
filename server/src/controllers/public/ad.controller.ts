@@ -9,7 +9,7 @@ export const getAds = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: 'page query param is required' });
     }
 
-    const validPages = ['HOME', 'BLOG', 'PRODUCT', 'CATEGORY', 'CALCULATOR'];
+    const validPages = ['HOME', 'BLOG', 'BLOG_DETAIL', 'PRODUCT', 'PRODUCT_DETAIL', 'CATEGORY', 'SUB_CATEGORY', 'TOOLS', 'CALCULATOR'];
     if (!validPages.includes(page as string)) {
       return res.status(400).json({ success: false, message: 'Invalid page value' });
     }

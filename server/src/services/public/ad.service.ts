@@ -6,8 +6,8 @@ export const getActiveAds = async (page: string, position?: string) => {
   return await prisma.cmsAd.findMany({
     where: {
       active: true,
-      page: page as any,
-      ...(position ? { position: position as any } : {}),
+      pages: { has: page as any },
+      ...(position ? { positions: { has: position as any } } : {}),
       OR: [
         { startDateTime: null, endDateTime: null },
         { startDateTime: { lte: now }, endDateTime: null },
@@ -21,8 +21,10 @@ export const getActiveAds = async (page: string, position?: string) => {
       image: true,
       link: true,
       size: true,
-      position: true,
-      page: true,
+      customWidth: true,
+      customHeight: true,
+      positions: true,
+      pages: true,
       sortOrder: true,
     },
     orderBy: { sortOrder: 'asc' },
@@ -42,7 +44,6 @@ export const trackAdEvent = async (body: {
 }) => {
   const { adId, type, ip, sessionId, userAgent, deviceType, page, referrer, country } = body;
 
-  // Unique check — IP based (same IP = same user, chahe alag device/browser ho)
   let isUnique = true;
   if (ip) {
     const existing = await prisma.cmsAdEvent.findFirst({

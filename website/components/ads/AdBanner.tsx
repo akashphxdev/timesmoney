@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
-type AdPage = 'HOME' | 'BLOG' | 'PRODUCT' | 'CATEGORY' | 'CALCULATOR';
+type AdPage = 'HOME' | 'BLOG' | 'BLOG_DETAIL' | 'PRODUCT' | 'PRODUCT_DETAIL' | 'CATEGORY' | 'SUB_CATEGORY' | 'TOOLS' | 'CALCULATOR';
 type AdPosition = 'TOP' | 'BOTTOM' | 'BETWEEN_CONTENT' | 'SIDEBAR';
 
 interface Ad {
@@ -13,8 +13,10 @@ interface Ad {
   image: string;
   link: string | null;
   size: string;
-  position: string;
-  page: string;
+  customWidth: number | null;
+  customHeight: number | null;
+  positions: string[];
+  pages: string[];
 }
 
 interface AdBannerProps {
@@ -58,7 +60,11 @@ function AdCard({ ad }: { ad: Ad }) {
   const impressionSent = useRef(false);
   const pathname = usePathname();
 
-  const size = SIZE_MAP[ad.size] || SIZE_MAP['BANNER_300x250'];
+  const size =
+    ad.size === 'CUSTOM' && ad.customWidth && ad.customHeight
+      ? { width: ad.customWidth, height: ad.customHeight }
+      : SIZE_MAP[ad.size] || SIZE_MAP['BANNER_300x250'];
+
   const aspectRatio = `${size.width}/${size.height}`;
 
   const sendEvent = useCallback(
@@ -112,14 +118,14 @@ function AdCard({ ad }: { ad: Ad }) {
       className={`relative overflow-hidden rounded-xl border border-gray-100 bg-white ${ad.link ? 'cursor-pointer' : ''}`}
       style={{ width: '100%', maxWidth: size.width, aspectRatio }}
     >
-      <span className="absolute top-1.5 right-2 z-10 text-[9px] font-medium tracking-widest uppercase bg-black/40 text-white px-1.5 py-0.5 rounded">
+      <span className="absolute top-1.5 right-2 z-10 text-[9px] font-medium tracking-widest uppercase bg-black/40 text-green-900 px-1.5 py-0.5 rounded">
         Ad
       </span>
       <Image
         src={`${process.env.NEXT_PUBLIC_API_URL_IMG}${ad.image}`}
         alt={ad.title}
         fill
-        className="object-contain"
+        className="object-fill"
         sizes={`${size.width}px`}
         unoptimized
       />

@@ -35,25 +35,25 @@ export const CreditReportSection = () => {
   return (
     <section className="relative bg-white overflow-hidden py-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
 
-          {/* LEFT — GIF */}
+          {/* LEFT — GIF: mobile pe chhoti, desktop pe full */}
           <div className="w-full md:w-1/2 flex items-end justify-center md:justify-start">
             <Image
               src="/second.gif"
               alt="Financial Health Preview"
               width={580}
               height={420}
-              className="object-contain w-full max-w-[580px]"
+              className="object-contain w-full max-w-[280px] sm:max-w-[380px] md:max-w-[580px]"
               unoptimized
             />
           </div>
 
           {/* RIGHT — Content */}
-          <div className="w-full md:w-1/2 flex flex-col items-start justify-center py-16 md:py-20 md:pl-8">
+          <div className="w-full md:w-1/2 flex flex-col items-start justify-center py-6 sm:py-10 md:py-20 md:pl-8">
 
-            {/* Eyebrow — same as Hero trust badge style */}
-            <div className="inline-flex items-center gap-2 w-fit mb-4">
+            {/* Eyebrow */}
+            <div className="inline-flex items-center gap-2 w-fit mb-3 sm:mb-4">
               <span
                 className="text-[10px] font-semibold tracking-widest uppercase text-brand-teal border border-brand-teal/30 bg-brand-teal/5 px-3 py-1 rounded-full"
                 style={{ fontFamily: 'var(--font-body)' }}
@@ -62,9 +62,9 @@ export const CreditReportSection = () => {
               </span>
             </div>
 
-            {/* Heading — same as Hero h1 style */}
+            {/* Heading */}
             <h2
-              className="text-3xl md:text-4xl text-slate-900 leading-[1.15] mb-6"
+              className="text-2xl sm:text-3xl md:text-4xl text-slate-900 leading-[1.15] mb-4 sm:mb-6"
               style={{ fontFamily: 'var(--font-display)' }}
             >
               Smart Money Decisions —{' '}
@@ -73,7 +73,7 @@ export const CreditReportSection = () => {
             </h2>
 
             {/* Points */}
-            <ul className="space-y-4 mb-8">
+            <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
               {points.map((p, i) => (
                 <li key={i} className="flex items-start gap-3">
                   <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-brand-teal/10 text-brand-teal flex items-center justify-center mt-0.5">
@@ -98,12 +98,12 @@ export const CreditReportSection = () => {
               ))}
             </ul>
 
-            {/* Divider — same as Hero stats border */}
-            <div className="w-full border-t border-gray-100 mb-6" />
+            {/* Divider */}
+            <div className="w-full border-t border-gray-100 mb-4 sm:mb-6" />
 
             {/* CTA Button */}
             <button
-              className="group relative flex items-center gap-3 bg-brand-teal hover:bg-green-700 text-white font-semibold py-3 px-7 rounded-lg text-sm shadow-md shadow-green-500/20 hover:shadow-lg transition-all duration-300 active:scale-[0.98]"
+              className="group relative flex items-center gap-3 bg-brand-teal hover:bg-green-700 text-white font-semibold py-3 px-6 sm:px-7 rounded-lg text-sm shadow-md shadow-green-500/20 hover:shadow-lg transition-all duration-300 active:scale-[0.98] w-full sm:w-auto justify-center sm:justify-start"
               style={{ fontFamily: 'var(--font-body)' }}
             >
               <span>Check Your Financial Health — Free</span>
@@ -117,9 +117,9 @@ export const CreditReportSection = () => {
               </svg>
             </button>
 
-            {/* Trust note — same as Hero bottom text */}
+            {/* Trust note */}
             <p
-              className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest mt-4"
+              className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest mt-3 sm:mt-4"
               style={{ fontFamily: 'var(--font-body)' }}
             >
               Free • Instant • 100% Secure

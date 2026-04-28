@@ -35,28 +35,50 @@ const readTime = (excerpt: string | null): string => {
 };
 
 const GAP = 32;
+const MOBILE_GAP = 16;
 const AUTO_SLIDE_INTERVAL = 3000;
 
 export const LatestBlogs = ({ blogs }: LatestBlogsProps) => {
   const [current, setCurrent] = useState(0);
   const [cardWidth, setCardWidth] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(3);
   const containerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const showSlider = blogs && blogs.length > 3;
-  const maxSlide = showSlider ? blogs.length - 3 : 0;
+  const gap = visibleCount === 1 ? MOBILE_GAP : GAP;
+  const showSlider = blogs && blogs.length > visibleCount;
+  const maxSlide = showSlider ? blogs.length - visibleCount : 0;
 
   useEffect(() => {
     const updateWidth = () => {
       if (containerRef.current) {
         const total = containerRef.current.offsetWidth;
-        setCardWidth((total - GAP * 2) / 3);
+        const w = window.innerWidth;
+
+        let count = 3;
+        let currentGap = GAP;
+
+        if (w < 640) {
+          count = 1;
+          currentGap = MOBILE_GAP;
+        } else if (w < 1024) {
+          count = 2;
+          currentGap = GAP;
+        }
+
+        setVisibleCount(count);
+        setCardWidth((total - currentGap * (count - 1)) / count);
       }
     };
     updateWidth();
     window.addEventListener('resize', updateWidth);
     return () => window.removeEventListener('resize', updateWidth);
   }, []);
+
+  // Reset current when visibleCount changes to avoid out-of-bound
+  useEffect(() => {
+    setCurrent(0);
+  }, [visibleCount]);
 
   const stopAuto = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -83,15 +105,18 @@ export const LatestBlogs = ({ blogs }: LatestBlogsProps) => {
     startAuto();
   };
 
-  const translateX = cardWidth ? current * (cardWidth + GAP) : 0;
+  const translateX = cardWidth ? current * (cardWidth + gap) : 0;
 
   return (
-    <section className="bg-white py-20">
+    <section className="bg-white py-12 md:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-14 gap-4 md:gap-6">
           <div>
-            <p className="text-brand-teal text-xs font-black uppercase tracking-[0.2em] mb-3">Learn & Grow</p>
+            <p className="text-brand-teal text-xs font-black uppercase tracking-[0.2em] mb-3">
+              Learn & Grow
+            </p>
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3 leading-tight">
               Knowledge <span className="text-brand-teal">Hub</span>
             </h2>
@@ -107,6 +132,7 @@ export const LatestBlogs = ({ blogs }: LatestBlogsProps) => {
           </Link>
         </div>
 
+        {/* Slider Container */}
         <div
           ref={containerRef}
           className="overflow-hidden"
@@ -116,7 +142,7 @@ export const LatestBlogs = ({ blogs }: LatestBlogsProps) => {
           <div
             className="flex transition-transform duration-500 ease-in-out"
             style={{
-              gap: `${GAP}px`,
+              gap: `${gap}px`,
               transform: `translateX(-${translateX}px)`,
             }}
           >
@@ -125,9 +151,18 @@ export const LatestBlogs = ({ blogs }: LatestBlogsProps) => {
                 key={blog.id}
                 href={`/blog/${blog.slug}`}
                 className="group cursor-pointer flex-shrink-0"
-                style={{ width: cardWidth ? `${cardWidth}px` : 'calc(33.333% - 22px)' }}
+                style={{
+                  width: cardWidth
+                    ? `${cardWidth}px`
+                    : visibleCount === 1
+                    ? '100%'
+                    : visibleCount === 2
+                    ? 'calc(50% - 16px)'
+                    : 'calc(33.333% - 22px)',
+                }}
               >
-                <div className="relative h-56 w-full overflow-hidden rounded-2xl mb-6 shadow-lg">
+                {/* Cover Image */}
+                <div className="relative h-44 sm:h-52 md:h-56 w-full overflow-hidden rounded-2xl mb-4 md:mb-6 shadow-lg">
                   {blog.coverImage ? (
                     <img
                       src={`${BACKEND_URL}${blog.coverImage}`}
@@ -148,6 +183,7 @@ export const LatestBlogs = ({ blogs }: LatestBlogsProps) => {
                   )}
                 </div>
 
+                {/* Meta */}
                 <div className="flex items-center gap-3 mb-3">
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                     {formatDate(blog.publishedAt)}
@@ -158,16 +194,19 @@ export const LatestBlogs = ({ blogs }: LatestBlogsProps) => {
                   </p>
                 </div>
 
-                <h4 className="text-lg font-black text-slate-900 leading-snug underline decoration-transparent group-hover:decoration-brand-teal transition-all duration-300 mb-4 underline-offset-4">
+                {/* Title */}
+                <h4 className="text-base sm:text-lg font-black text-slate-900 leading-snug underline decoration-transparent group-hover:decoration-brand-teal transition-all duration-300 mb-3 md:mb-4 underline-offset-4">
                   {blog.title}
                 </h4>
 
+                {/* Excerpt */}
                 {blog.excerpt && (
-                  <p className="text-slate-500 text-sm leading-relaxed mb-4 line-clamp-2">
+                  <p className="text-slate-500 text-sm leading-relaxed mb-3 md:mb-4 line-clamp-2">
                     {blog.excerpt}
                   </p>
                 )}
 
+                {/* Read More */}
                 <div className="flex items-center gap-2 text-slate-800 font-black text-[11px] uppercase tracking-widest group-hover:gap-3 group-hover:text-brand-teal transition-all duration-300">
                   <span>Read Article</span>
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,8 +218,9 @@ export const LatestBlogs = ({ blogs }: LatestBlogsProps) => {
           </div>
         </div>
 
+        {/* Dots */}
         {showSlider && (
-          <div className="flex justify-center items-center gap-2 mt-10">
+          <div className="flex justify-center items-center gap-2 mt-8 md:mt-10">
             {Array.from({ length: maxSlide + 1 }).map((_, i) => (
               <span
                 key={i}

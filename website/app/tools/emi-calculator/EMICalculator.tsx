@@ -1,5 +1,6 @@
 'use client';
 import { useState, useCallback } from 'react';
+import AdBanner from '@/components/ads/AdBanner';
 
 const formatINR = (n: number) => {
   n = Math.round(n);
@@ -54,6 +55,7 @@ export default function EMICalculator() {
 
   return (
     <div className="font-sans">
+      <AdBanner page="CALCULATOR" position="TOP" />
       {/* Hero */}
       <div className="bg-brand-teal py-8 px-6 md:px-10 mb-8">
         <div className="max-w-7xl mx-auto">
@@ -178,11 +180,13 @@ export default function EMICalculator() {
               <p className="text-[11px] text-slate-400 border-t border-gray-100 pt-4 leading-relaxed">
                 <span className="font-semibold text-slate-500">Disclaimer:</span> Results are indicative only. Actual EMI may vary based on lender terms and processing fees.
               </p>
+              <AdBanner page="CALCULATOR" position="BOTTOM" className="mt-4" />
             </div>
           </div>
 
           {/* Right sticky */}
           <div className="flex flex-col gap-4 lg:sticky lg:top-24">
+             <AdBanner page="CALCULATOR" position="SIDEBAR" className="mb-2" />
             <div className="bg-brand-teal rounded-2xl p-6">
               <p className="text-[11px] uppercase tracking-widest text-white/65 mb-1">Monthly EMI</p>
               <p className="text-4xl font-bold text-white tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>{formatINR(emi)}</p>

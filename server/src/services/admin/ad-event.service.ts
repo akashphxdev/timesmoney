@@ -39,7 +39,7 @@ export const getAllAdEvents = async (filters: {
     prisma.cmsAdEvent.findMany({
       where,
       include: {
-        ad: { select: { id: true, title: true, page: true, position: true } },
+        ad: { select: { id: true, title: true, pages: true, positions: true } },
       },
       orderBy: { createdAt: 'desc' },
       skip,

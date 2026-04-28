@@ -34,12 +34,13 @@ export const CreditGame = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-end">
+          
           {/* Left Content */}
-          <div className="space-y-4 max-w-md pb-10">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#1B2A4A] leading-tight">
+          <div className="space-y-4 max-w-md pb-10 w-full md:w-auto">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#1B2A4A] leading-tight text-center md:text-left">
               Find the Best Credit Card — Just for You!
             </h2>
-            <p className="text-[#1B2A4A] text-base leading-relaxed opacity-75">
+            <p className="text-[#1B2A4A] text-base leading-relaxed opacity-75 text-center md:text-left">
               Compare top credit cards tailored to your credit profile. Check your eligibility instantly — no hard enquiry, no stress.
             </p>
             <ul className="space-y-2">
@@ -48,38 +49,41 @@ export const CreditGame = () => {
                 "✓ Know approval chances before applying",
                 "✓ Zero impact on your Credit Score",
               ].map((item) => (
-                <li key={item} className="text-[#1B2A4A] text-sm font-medium opacity-80">
+                <li key={item} className="text-[#1B2A4A] text-sm font-medium opacity-80 text-center md:text-left">
                   {item}
                 </li>
               ))}
             </ul>
-            <button className="bg-[#00a63e] hover:bg-[#4058d1] text-white font-bold py-4 px-12 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all transform active:scale-95">
-              Get Started Free
-            </button>
-            <p className="text-xs text-[#1B2A4A] opacity-50">
+            <div className="flex justify-center md:justify-start">
+              <button className="bg-[#00a63e] hover:bg-[#4058d1] text-white font-bold py-4 px-12 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all transform active:scale-95 w-full sm:w-auto">
+                Get Started Free
+              </button>
+            </div>
+            <p className="text-xs text-[#1B2A4A] opacity-50 text-center md:text-left">
               Already have an account?{" "}
               <span className="underline cursor-pointer opacity-80">Log In</span>
             </p>
           </div>
 
           {/* Right Content — GIF flush at bottom */}
-          <div className="mt-8 md:mt-0 flex flex-col items-end justify-end">
-            <p className="text-[#1B2A4A] text-sm font-medium leading-relaxed max-w-sm text-right opacity-70 mb-4">
+          <div className="mt-6 md:mt-0 flex flex-col items-center md:items-end justify-end w-full md:w-auto">
+            <p className="text-[#1B2A4A] text-sm font-medium leading-relaxed max-w-sm text-center md:text-right opacity-70 mb-4 px-4 md:px-0">
               Smart tech matches you with the right credit cards — apply with confidence, not guesswork.
             </p>
 
-            {/* GIF — slightly up */}
-            <div className="relative translate-y-1">
+            {/* GIF */}
+            <div className="relative translate-y-1 w-full flex justify-center md:justify-end">
               <Image
                 src="/video-gif.gif"
                 alt="Credit Card Comparison Animation"
                 width={420}
                 height={320}
-                className="object-contain"
+                className="object-contain w-[280px] sm:w-[340px] md:w-[420px]"
                 unoptimized
               />
             </div>
           </div>
+
         </div>
       </div>
     </section>

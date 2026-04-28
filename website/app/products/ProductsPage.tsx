@@ -1,5 +1,6 @@
 // Path: website/app/products/ProductsPageUI.tsx
 
+import AdBanner from '@/components/ads/AdBanner';
 import ProductCard from '@/components/ProductCard';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') ?? '';
@@ -30,6 +31,7 @@ interface Props {
 export default function ProductsPageUI({ products }: Props) {
   return (
     <main className="min-h-screen bg-gray-50">
+      <AdBanner page="PRODUCT" position="TOP" className="mb-1" />
       {/* Header */}
       <section className="bg-white border-b border-gray-100 py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -61,6 +63,7 @@ export default function ProductsPageUI({ products }: Props) {
           )}
         </div>
       </section>
+      <AdBanner page="PRODUCT" position="BOTTOM" className="mb-1" />
     </main>
   );
 }

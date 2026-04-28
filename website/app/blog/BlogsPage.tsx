@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
+import AdBanner from '@/components/ads/AdBanner';
 
 interface Blog {
   id: string;
@@ -113,32 +114,34 @@ export default function BlogsPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
+      
 
       {/* Hero Header */}
       <div className="bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16">
+          <AdBanner page="BLOG" position="TOP" className="mb-1" />
 
-          <p className="text-brand-teal text-xs font-black uppercase tracking-[0.2em] mb-3">
+          <p className="text-brand-teal text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] mb-2 sm:mb-3">
             TimesMoney — Knowledge Hub
           </p>
 
-          <h1 className="text-4xl md:text-5xl font-black text-gray-900 leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 leading-tight">
             Smart Money,{' '}
             <span className="text-brand-teal">Smarter Decisions</span>
           </h1>
 
-          <p className="mt-4 text-gray-500 text-base max-w-2xl leading-relaxed">
+          <p className="mt-3 sm:mt-4 text-gray-500 text-sm sm:text-base max-w-2xl leading-relaxed">
             Personal loans se lekar credit cards, investments aur insurance tak —
             TimesMoney laata hai aapke liye expert-backed financial guidance,
             bilkul simple aur samajhne wali bhasha mein.
           </p>
 
-          {/* Topic Pills */}
-          <div className="mt-6 flex flex-wrap gap-2">
+          {/* Topic Pills — scrollable on mobile */}
+          <div className="mt-4 sm:mt-6 flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-x-visible scrollbar-hide">
             {topics.map((topic) => (
               <span
                 key={topic.label}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-teal bg-brand-teal/5 border border-brand-teal/20 px-3 py-1.5 rounded-full"
+                className="flex-shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold text-brand-teal bg-brand-teal/5 border border-brand-teal/20 px-3 py-1.5 rounded-full whitespace-nowrap"
               >
                 {topic.icon}
                 {topic.label}
@@ -148,15 +151,15 @@ export default function BlogsPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
 
         {/* Loading Skeleton */}
         {loading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
             {[...Array(9)].map((_, i) => (
               <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
-                <div className="h-48 bg-gray-200" />
-                <div className="p-5 space-y-3">
+                <div className="h-44 sm:h-48 bg-gray-200" />
+                <div className="p-4 sm:p-5 space-y-3">
                   <div className="h-4 bg-gray-200 rounded w-1/3" />
                   <div className="h-6 bg-gray-200 rounded w-3/4" />
                   <div className="h-4 bg-gray-200 rounded w-full" />
@@ -170,7 +173,7 @@ export default function BlogsPage() {
         {/* Blog Grid */}
         {!loading && (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
               {blogs.map((blog) => (
                 <a
                   key={blog.id}
@@ -178,7 +181,7 @@ export default function BlogsPage() {
                   className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 group border border-gray-100 hover:border-brand-teal/20 flex flex-col"
                 >
                   {/* Cover Image */}
-                  <div className="h-48 bg-gray-100 overflow-hidden flex-shrink-0">
+                  <div className="h-44 sm:h-48 bg-gray-100 overflow-hidden flex-shrink-0">
                     {blog.coverImage ? (
                       <img
                         src={
@@ -197,7 +200,7 @@ export default function BlogsPage() {
                   </div>
 
                   {/* Content */}
-                  <div className="p-5 flex flex-col flex-1">
+                  <div className="p-4 sm:p-5 flex flex-col flex-1">
 
                     {/* Category Badge */}
                     {blog.category && (
@@ -207,20 +210,20 @@ export default function BlogsPage() {
                     )}
 
                     {/* Title */}
-                    <h2 className="mt-3 text-lg font-bold text-gray-900 group-hover:text-brand-teal transition-colors line-clamp-2 leading-snug">
+                    <h2 className="mt-2.5 sm:mt-3 text-base sm:text-lg font-bold text-gray-900 group-hover:text-brand-teal transition-colors line-clamp-2 leading-snug">
                       {blog.title}
                     </h2>
 
                     {/* Excerpt */}
                     {blog.excerpt && (
-                      <p className="mt-2 text-sm text-gray-500 line-clamp-2 leading-relaxed flex-1">
+                      <p className="mt-1.5 sm:mt-2 text-sm text-gray-500 line-clamp-2 leading-relaxed flex-1">
                         {blog.excerpt}
                       </p>
                     )}
 
                     {/* Tags */}
                     {blog.tags.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-1">
+                      <div className="mt-2.5 sm:mt-3 flex flex-wrap gap-1">
                         {blog.tags.slice(0, 3).map((tag) => (
                           <span
                             key={tag}
@@ -233,7 +236,7 @@ export default function BlogsPage() {
                     )}
 
                     {/* Meta + Read More */}
-                    <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+                    <div className="mt-3 sm:mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
                       <div className="flex flex-col gap-0.5 text-xs text-gray-400">
                         <span className="flex items-center">
                           <UserIcon />
@@ -263,11 +266,11 @@ export default function BlogsPage() {
 
             {/* Pagination */}
             {pagination && pagination.totalPages > 1 && (
-              <div className="mt-10 flex justify-center items-center space-x-2">
+              <div className="mt-8 sm:mt-10 flex justify-center items-center gap-1.5 sm:gap-2 flex-wrap">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:border-brand-teal hover:text-brand-teal transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="px-3 sm:px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:border-brand-teal hover:text-brand-teal transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   ← Prev
                 </button>
@@ -276,7 +279,7 @@ export default function BlogsPage() {
                   <button
                     key={i}
                     onClick={() => setPage(i + 1)}
-                    className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
+                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg text-sm font-medium transition-colors ${
                       page === i + 1
                         ? 'bg-brand-teal text-white shadow-md shadow-green-500/20'
                         : 'border border-gray-200 text-gray-600 hover:border-brand-teal hover:text-brand-teal'
@@ -289,7 +292,7 @@ export default function BlogsPage() {
                 <button
                   onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
                   disabled={page === pagination.totalPages}
-                  className="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:border-brand-teal hover:text-brand-teal transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="px-3 sm:px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:border-brand-teal hover:text-brand-teal transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Next →
                 </button>
@@ -298,7 +301,7 @@ export default function BlogsPage() {
 
             {/* No Blogs */}
             {blogs.length === 0 && (
-              <div className="text-center py-20">
+              <div className="text-center py-16 sm:py-20">
                 <EmptyIcon />
                 <p className="mt-4 text-lg text-slate-400 font-semibold">No blogs found</p>
                 <p className="text-sm text-slate-300 mt-1">No blogs have been published yet</p>
@@ -307,6 +310,7 @@ export default function BlogsPage() {
           </>
         )}
       </div>
+      <AdBanner page="BLOG" position="BOTTOM" className="mb-1" />
     </main>
   );
 }

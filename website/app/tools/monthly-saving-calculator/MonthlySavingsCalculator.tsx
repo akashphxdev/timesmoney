@@ -1,6 +1,6 @@
 'use client';
 import { useState, useCallback } from 'react';
-
+import AdBanner from '@/components/ads/AdBanner';
 const formatINR = (n: number) => {
   n = Math.round(n);
   if (n >= 10000000) return '₹' + (n / 10000000).toFixed(2) + ' Cr';
@@ -62,6 +62,7 @@ export default function MonthlySavingsCalculator() {
 
   return (
     <div className="font-sans">
+      <AdBanner page="CALCULATOR" position="TOP" />
       <div className="bg-brand-teal py-8 px-6 md:px-10 mb-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-3">
@@ -205,11 +206,13 @@ export default function MonthlySavingsCalculator() {
               </div>
               <p className="text-[11px] text-slate-400 border-t border-gray-100 pt-4 leading-relaxed">
                 <span className="font-semibold text-slate-500">Disclaimer:</span> Projections assume consistent monthly savings and fixed return rate. Actual results may vary based on market conditions and personal circumstances.
+                <AdBanner page="CALCULATOR" position="BOTTOM" className="mt-4" />
               </p>
             </div>
           </div>
 
           <div className="flex flex-col gap-4 lg:sticky lg:top-24">
+             <AdBanner page="CALCULATOR" position="SIDEBAR" className="mb-2" />
             <div className="bg-brand-teal rounded-2xl p-6">
               <p className="text-[11px] uppercase tracking-widest text-white/65 mb-1">Monthly Savings</p>
               <p className="text-4xl font-bold text-white tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>{formatINR(monthlySavings)}</p>

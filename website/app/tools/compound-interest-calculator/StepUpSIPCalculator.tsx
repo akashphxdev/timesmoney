@@ -1,4 +1,5 @@
 'use client';
+import AdBanner from '@/components/ads/AdBanner';
 import { useState, useCallback } from 'react';
 
 const formatINR = (n: number) => {
@@ -41,6 +42,7 @@ export default function StepUpSIPCalculator() {
 
   return (
     <div className="font-sans">
+      <AdBanner page="CALCULATOR" position="TOP" />
       <div className="bg-brand-teal py-8 px-6 md:px-10 mb-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-3">
@@ -123,10 +125,12 @@ export default function StepUpSIPCalculator() {
                 <p className="text-xs text-slate-500">₹5,000/month SIP at 12% for 20 years = <strong className="text-slate-700">{formatINR(monthly * ((Math.pow(1 + 12/1200, 240) - 1) / (12/1200)) * (1 + 12/1200))}</strong> corpus. With 10% annual step-up, the same grows to significantly more.</p>
               </div>
               <p className="text-[11px] text-slate-400 border-t border-gray-100 pt-4 leading-relaxed"><span className="font-semibold text-slate-500">Disclaimer:</span> Returns are illustrative. Mutual fund investments are subject to market risks.</p>
+              <AdBanner page="CALCULATOR" position="BOTTOM" className="mt-4" />
             </div>
           </div>
 
           <div className="flex flex-col gap-4 lg:sticky lg:top-24">
+            <AdBanner page="CALCULATOR" position="SIDEBAR" className="mb-2" />
             <div className="bg-brand-teal rounded-2xl p-6">
               <p className="text-[11px] uppercase tracking-widest text-white/65 mb-1">Step-Up Corpus</p>
               <p className="text-4xl font-bold text-white tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>{formatINR(corpus)}</p>

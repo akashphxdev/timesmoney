@@ -19,32 +19,81 @@ interface Category {
 
 const EMPLOYMENT_TYPES = ['Salaried', 'Self-Employed', 'Business', 'Student', 'Others'];
 
+// ── SVG Icons ──────────────────────────────────────────────────────────────
+const IconClose = () => (
+  <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" viewBox="0 0 11 11">
+    <path d="M1 1l9 9M10 1L1 10" />
+  </svg>
+);
+
+const IconStar = () => (
+  <svg width="10" height="10" fill="currentColor" viewBox="0 0 20 20">
+    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+  </svg>
+);
+
+const IconPhone = () => (
+  <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.01 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z" />
+  </svg>
+);
+
+const IconLock = () => (
+  <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0110 0v4" />
+  </svg>
+);
+
+const IconMail = () => (
+  <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+    <polyline points="22,6 12,13 2,6" />
+  </svg>
+);
+
+const IconWarning = () => (
+  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+    <line x1="12" y1="9" x2="12" y2="13" />
+    <line x1="12" y1="17" x2="12.01" y2="17" />
+  </svg>
+);
+// ───────────────────────────────────────────────────────────────────────────
+
 export const WelcomeModal = () => {
   const router = useRouter();
   const [show, setShow] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
-  const [step, setStep] = useState<1 | 2>(1);
 
-  // Step 1
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [subCategoryId, setSubCategoryId] = useState('');
   const [employmentType, setEmploymentType] = useState('');
-
-  // Step 2
   const [email, setEmail] = useState('');
-  const [leadId, setLeadId] = useState('');
-  const [redirectSlugs, setRedirectSlugs] = useState({ category: '', subCategory: '' });
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ field: string; message: string }[]>([]);
 
+  // touched — jinhe user ne chua ho unhi pe field error dikhao
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
   const filteredSubs = subCategories.filter((s) => s.categoryId === categoryId);
+  const selectedCategoryName = categories.find((c) => c.id === categoryId)?.name ?? '';
+
   useEffect(() => { setSubCategoryId(''); }, [categoryId]);
 
   const fieldError = (field: string) => errors.find((e) => e.field === field)?.message;
+  const showFieldError = (field: string) => touched[field] ? fieldError(field) : undefined;
+
+  const touch = (field: string) => setTouched((prev) => ({ ...prev, [field]: true }));
+
+  // General errors = woh jo kisi specific field se linked nahi
+  const generalErrors = errors.filter(
+    (e) => !['name', 'phone', 'categoryId', 'subCategoryId', 'employmentType', 'email'].includes(e.field)
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,14 +111,12 @@ export const WelcomeModal = () => {
   useEffect(() => {
     const seen = localStorage.getItem('welcome_modal_seen');
     if (seen) return;
-
     const handleScroll = () => {
       if (window.scrollY > 300) {
         setShow(true);
         window.removeEventListener('scroll', handleScroll);
       }
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -79,12 +126,19 @@ export const WelcomeModal = () => {
     setShow(false);
   };
 
-  // ── Step 1 ──
-  const handleStep1 = async () => {
+  const handleSubmit = async () => {
+    // Sabhi fields ko touched mark karo taaki saare errors dikhe
+    setTouched({ name: true, phone: true, categoryId: true, subCategoryId: true, employmentType: true, email: true });
+
     if (!name || !phone || !categoryId) {
-      setErrors([{ field: 'general', message: 'Name, phone and category are required' }]);
+      setErrors([
+        ...(!name ? [{ field: 'name', message: 'Name required hai' }] : []),
+        ...(!phone ? [{ field: 'phone', message: 'Phone required hai' }] : []),
+        ...(!categoryId ? [{ field: 'categoryId', message: 'Category select karo' }] : []),
+      ]);
       return;
     }
+
     setErrors([]);
     setLoading(true);
     try {
@@ -96,44 +150,33 @@ export const WelcomeModal = () => {
         employmentType: employmentType || undefined,
       });
 
+      const leadId = res.data.data.id;
+      localStorage.setItem('tm_user_name', name.trim());
+      localStorage.setItem('tm_user_phone', phone.trim());
+
+      if (email.trim()) {
+        await api.patch(`/public/home/lead/${leadId}`, { email: email.trim() });
+        localStorage.setItem('tm_user_email', email.trim());
+      }
+
       const selectedCategory = categories.find((c) => c.id === categoryId);
       const selectedSub = subCategories.find((s) => s.id === subCategoryId);
-
-      setLeadId(res.data.data.id);
-      setRedirectSlugs({
-        category: selectedCategory?.slug ?? '',
-        subCategory: res.data.data.subCategorySlug ?? selectedSub?.slug ?? '',
-      });
-
-      setStep(2);
-    } catch (err: unknown) {
-      const apiErr = err as { response?: { data?: { errors?: { field: string; message: string }[]; message?: string } } };
-      const json = apiErr?.response?.data;
-      setErrors(json?.errors ?? [{ field: 'general', message: json?.message ?? 'Something went wrong' }]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ── Step 2 ──
-  const handleStep2 = async () => {
-    if (!email) {
-      setErrors([{ field: 'email', message: 'Email is required' }]);
-      return;
-    }
-    setErrors([]);
-    setLoading(true);
-    try {
-      await api.patch(`/public/home/lead/${leadId}`, { email: email.trim() });
+      const catSlug = selectedCategory?.slug ?? '';
+      const subSlug = res.data.data.subCategorySlug ?? selectedSub?.slug ?? '';
 
       handleClose();
-      const { category, subCategory } = redirectSlugs;
-      const path = subCategory ? `/${category}/${subCategory}` : `/${category}`;
-      router.push(path);
+      router.push(subSlug ? `/${catSlug}/${subSlug}` : `/${catSlug}`);
     } catch (err: unknown) {
       const apiErr = err as { response?: { data?: { errors?: { field: string; message: string }[]; message?: string } } };
       const json = apiErr?.response?.data;
-      setErrors(json?.errors ?? [{ field: 'general', message: json?.message ?? 'Something went wrong' }]);
+      const backendErrors = json?.errors ?? [{ field: 'general', message: json?.message ?? 'Something went wrong' }];
+      setErrors(backendErrors);
+      // Backend se jo bhi errors aaye unhe sab touched mark karo
+      setTouched((prev) => {
+        const next = { ...prev };
+        backendErrors.forEach((e) => { next[e.field] = true; });
+        return next;
+      });
     } finally {
       setLoading(false);
     }
@@ -142,199 +185,497 @@ export const WelcomeModal = () => {
   if (!show) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-[999] flex items-center justify-center px-4"
-      style={{ background: 'rgba(0,0,0,0.55)' }}
-    >
-      <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+    <>
+      <style>{`
+        .wm-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 999;
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          background: rgba(0,0,0,0.55);
+          backdrop-filter: blur(3px);
+          animation: wmFadeIn 0.25s ease;
+        }
+        @media (min-width: 640px) {
+          .wm-overlay { align-items: center; padding: 16px; }
+        }
+        @keyframes wmFadeIn { from { opacity:0 } to { opacity:1 } }
 
-        {/* ── Header ── */}
-        <div className="px-8 py-6 relative bg-brand-teal">
-          <button
-            onClick={handleClose}
-            className="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center transition-colors hover:bg-white/20"
-            style={{ background: 'rgba(255,255,255,0.15)' }}
-          >
-            <svg className="w-3 h-3" fill="none" stroke="white" viewBox="0 0 12 12">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M1 1l10 10M11 1L1 11" />
-            </svg>
-          </button>
+        .wm-card {
+          background: #fff;
+          width: 100%;
+          max-width: 460px;
+          border-radius: 20px 20px 0 0;
+          overflow: hidden;
+          animation: wmSlideUp 0.35s cubic-bezier(0.32, 1.2, 0.64, 1);
+          max-height: 96vh;
+          overflow-y: auto;
+          scrollbar-width: none;
+        }
+        .wm-card::-webkit-scrollbar { display: none; }
+        @media (min-width: 640px) {
+          .wm-card { border-radius: 20px; max-height: 92vh; }
+        }
+        @keyframes wmSlideUp {
+          from { transform: translateY(40px); opacity: 0; }
+          to   { transform: translateY(0);    opacity: 1; }
+        }
 
-          <div className="flex items-center gap-3 mb-3">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ background: 'rgba(255,255,255,0.15)' }}
-            >
-              {step === 1 ? (
-                <svg className="w-5 h-5" fill="none" stroke="white" strokeWidth={2} strokeLinecap="round" viewBox="0 0 24 24">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" stroke="white" strokeWidth={2} strokeLinecap="round" viewBox="0 0 24 24">
-                  <rect x="2" y="4" width="20" height="16" rx="2" />
-                  <path d="M22 7l-10 7L2 7" />
-                </svg>
-              )}
-            </div>
-            <div>
-              <p className="text-xs mb-0.5 text-white/60 uppercase tracking-widest">
-                Step {step} of 2
-              </p>
-              <h2 className="text-white font-semibold text-lg leading-tight">
-                {step === 1 ? 'Tell us about yourself' : 'Almost there!'}
-              </h2>
-            </div>
+        /* ── Header ── */
+        .wm-header {
+          background: var(--brand-teal, #0d9488);
+          padding: 18px 22px 16px;
+          position: relative;
+          overflow: hidden;
+        }
+        .wm-header::before {
+          content: '';
+          position: absolute;
+          top: -30px; right: -30px;
+          width: 130px; height: 130px;
+          background: rgba(255,255,255,0.07);
+          border-radius: 50%;
+        }
+        .wm-close {
+          position: absolute;
+          top: 12px; right: 12px;
+          width: 28px; height: 28px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.18);
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          transition: background 0.2s;
+          z-index: 2;
+        }
+        .wm-close:hover { background: rgba(255,255,255,0.28); }
+        .wm-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          background: rgba(255,255,255,0.15);
+          border: 1px solid rgba(255,255,255,0.22);
+          padding: 3px 10px;
+          border-radius: 20px;
+          font-size: 9px;
+          font-weight: 700;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.92);
+          margin-bottom: 8px;
+        }
+        .wm-title {
+          font-size: 19px;
+          font-weight: 700;
+          color: #fff;
+          margin: 0 0 2px;
+          line-height: 1.25;
+          letter-spacing: -0.3px;
+        }
+        .wm-subtitle {
+          font-size: 12px;
+          color: rgba(255,255,255,0.65);
+          margin: 0;
+        }
+
+        /* ── Body ── */
+        .wm-body {
+          padding: 16px 22px 20px;
+        }
+
+        /* ── General error banner ── */
+        .wm-error-banner {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          background: #fef2f2;
+          border: 1.5px solid #fca5a5;
+          border-radius: 10px;
+          padding: 10px 12px;
+          margin-bottom: 14px;
+          animation: wmShake 0.35s ease;
+        }
+        .wm-error-banner-icon { color: #dc2626; flex-shrink: 0; margin-top: 1px; }
+        .wm-error-banner-text { font-size: 12px; color: #dc2626; font-weight: 500; line-height: 1.4; }
+
+        @keyframes wmShake {
+          0%,100% { transform: translateX(0); }
+          20%      { transform: translateX(-4px); }
+          40%      { transform: translateX(4px); }
+          60%      { transform: translateX(-3px); }
+          80%      { transform: translateX(3px); }
+        }
+
+        .wm-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+        .wm-field { margin-bottom: 10px; }
+        .wm-label {
+          display: block;
+          font-size: 9px;
+          font-weight: 700;
+          letter-spacing: 0.8px;
+          text-transform: uppercase;
+          color: #94a3b8;
+          margin-bottom: 5px;
+        }
+
+        /* ── Input base ── */
+        .wm-input {
+          width: 100%;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 10px;
+          padding: 8px 12px;
+          font-size: 13px;
+          color: #1e293b;
+          background: #f8fafc;
+          outline: none;
+          transition: all 0.18s;
+          box-sizing: border-box;
+        }
+        .wm-input:focus {
+          border-color: var(--brand-teal, #0d9488);
+          background: #fff;
+          box-shadow: 0 0 0 3px rgba(13,148,136,0.08);
+        }
+        .wm-input.wm-input-err {
+          border-color: #f87171;
+          background: #fff5f5;
+        }
+        .wm-input.wm-input-err:focus {
+          border-color: #ef4444;
+          box-shadow: 0 0 0 3px rgba(239,68,68,0.08);
+        }
+        .wm-input::placeholder { color: #cbd5e1; font-size: 12px; }
+
+        /* ── Phone ── */
+        .wm-phone-wrap {
+          display: flex;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 10px;
+          overflow: hidden;
+          background: #f8fafc;
+          transition: all 0.18s;
+        }
+        .wm-phone-wrap:focus-within {
+          border-color: var(--brand-teal, #0d9488);
+          background: #fff;
+          box-shadow: 0 0 0 3px rgba(13,148,136,0.08);
+        }
+        .wm-phone-wrap.wm-input-err {
+          border-color: #f87171;
+          background: #fff5f5;
+        }
+        .wm-phone-wrap.wm-input-err:focus-within {
+          border-color: #ef4444;
+          box-shadow: 0 0 0 3px rgba(239,68,68,0.08);
+        }
+        .wm-phone-prefix {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding: 8px 10px;
+          font-size: 12px;
+          font-weight: 600;
+          color: #475569;
+          background: #f1f5f9;
+          border-right: 1.5px solid #e2e8f0;
+          white-space: nowrap;
+        }
+        .wm-phone-input {
+          flex: 1;
+          border: none;
+          outline: none;
+          padding: 8px 10px;
+          font-size: 13px;
+          color: #1e293b;
+          background: transparent;
+          min-width: 0;
+        }
+        .wm-phone-input::placeholder { color: #cbd5e1; font-size: 12px; }
+
+        /* ── Select ── */
+        .wm-select {
+          width: 100%;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 10px;
+          padding: 8px 12px;
+          font-size: 13px;
+          color: #1e293b;
+          background: #f8fafc;
+          outline: none;
+          transition: all 0.18s;
+          appearance: none;
+          cursor: pointer;
+          box-sizing: border-box;
+        }
+        .wm-select:focus {
+          border-color: var(--brand-teal, #0d9488);
+          background: #fff;
+          box-shadow: 0 0 0 3px rgba(13,148,136,0.08);
+        }
+        .wm-select.wm-input-err {
+          border-color: #f87171;
+          background: #fff5f5;
+        }
+
+        /* ── Field error text ── */
+        .wm-field-err {
+          font-size: 10px;
+          color: #ef4444;
+          margin-top: 4px;
+          display: flex;
+          align-items: center;
+          gap: 3px;
+          font-weight: 500;
+          animation: wmFadeIn 0.2s ease;
+        }
+
+        /* ── Chips ── */
+        .wm-chips {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+        }
+        .wm-chip {
+          padding: 5px 11px;
+          border-radius: 20px;
+          font-size: 11px;
+          font-weight: 500;
+          border: 1.5px solid #e2e8f0;
+          background: #fff;
+          color: #64748b;
+          cursor: pointer;
+          transition: all 0.15s;
+        }
+        .wm-chip:hover { border-color: var(--brand-teal, #0d9488); color: var(--brand-teal, #0d9488); }
+        .wm-chip.active {
+          background: rgba(13,148,136,0.07);
+          border-color: var(--brand-teal, #0d9488);
+          color: var(--brand-teal, #0d9488);
+          font-weight: 600;
+        }
+
+        /* ── Divider ── */
+        .wm-divider {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin: 8px 0 10px;
+        }
+        .wm-divider-line { flex: 1; height: 1px; background: #f1f5f9; }
+        .wm-divider-text {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 10px;
+          color: #94a3b8;
+          font-weight: 500;
+          white-space: nowrap;
+        }
+
+        /* ── Submit button ── */
+        .wm-btn {
+          width: 100%;
+          background: var(--brand-teal, #0d9488);
+          color: #fff;
+          border: none;
+          border-radius: 12px;
+          padding: 12px;
+          font-size: 14px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s;
+          margin-top: 4px;
+          position: relative;
+          overflow: hidden;
+          letter-spacing: 0.2px;
+        }
+        .wm-btn::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+          transform: translateX(-100%);
+          animation: wmShimmer 2.5s infinite;
+        }
+        @keyframes wmShimmer {
+          0%   { transform: translateX(-100%); }
+          100% { transform: translateX(100%);  }
+        }
+        .wm-btn:hover { background: #0f766e; box-shadow: 0 6px 20px rgba(13,148,136,0.28); transform: translateY(-1px); }
+        .wm-btn:active { transform: scale(0.98); }
+        .wm-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* ── Footer ── */
+        .wm-footer {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          text-align: center;
+          font-size: 10px;
+          color: #94a3b8;
+          margin-top: 10px;
+        }
+      `}</style>
+
+      <div className="wm-overlay" onClick={(e) => e.target === e.currentTarget && handleClose()}>
+        <div className="wm-card">
+
+          {/* ── Header ── */}
+          <div className="wm-header">
+            <button className="wm-close" onClick={handleClose}><IconClose /></button>
+            <div className="wm-badge"><IconStar /> Exclusive Offers</div>
+            <h2 className="wm-title">Get Your Best Financial Offer</h2>
+            <p className="wm-subtitle">Quick form — less than 60 seconds</p>
           </div>
 
-          {/* Progress bar */}
-          <div className="flex gap-1.5">
-            <div className="h-1 flex-1 rounded-full bg-white" />
-            <div
-              className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                step === 2 ? 'bg-white' : 'bg-white/25'
-              }`}
-            />
-          </div>
-        </div>
+          {/* ── Body ── */}
+          <div className="wm-body">
 
-        {/* ── Form body ── */}
-        <div className="px-8 py-7 flex flex-col gap-4">
+            {/* General / backend error banner */}
+            {generalErrors.length > 0 && (
+              <div className="wm-error-banner">
+                <span className="wm-error-banner-icon"><IconWarning /></span>
+                <div className="wm-error-banner-text">
+                  {generalErrors.map((e, i) => <div key={i}>{e.message}</div>)}
+                </div>
+              </div>
+            )}
 
-          {fieldError('general') && (
-            <p className="text-red-500 text-xs font-medium bg-red-50 px-4 py-2.5 rounded-xl border border-red-100">
-              {fieldError('general')}
-            </p>
-          )}
-
-          {/* ── STEP 1 ── */}
-          {step === 1 && (
-            <>
-              <div>
-                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5">Full Name</label>
+            {/* Name + Phone */}
+            <div className="wm-row">
+              <div className="wm-field">
+                <label className="wm-label">Full Name</label>
                 <input
                   type="text"
                   placeholder="Rahul Sharma"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-brand-teal transition-colors"
+                  onChange={(e) => { setName(e.target.value); setErrors((prev) => prev.filter((err) => err.field !== 'name')); }}
+                  onBlur={() => touch('name')}
+                  className={`wm-input${showFieldError('name') ? ' wm-input-err' : ''}`}
                 />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5">Mobile Number</label>
-                <div className="flex border border-slate-200 rounded-xl overflow-hidden focus-within:border-brand-teal transition-colors">
-                  <span className="flex items-center gap-1.5 px-3 text-sm text-slate-500 bg-slate-50 border-r border-slate-200 whitespace-nowrap">
-                    🇮🇳 <span className="font-medium">+91</span>
-                  </span>
-                  <input
-                    type="tel"
-                    placeholder="000 000 0000"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                    className="flex-1 px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none bg-white"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5">Category</label>
-                  <select
-                    value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-brand-teal transition-colors appearance-none bg-white"
-                  >
-                    <option value="">Select</option>
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5">Sub Category</label>
-                  <select
-                    value={subCategoryId}
-                    onChange={(e) => setSubCategoryId(e.target.value)}
-                    disabled={!categoryId || filteredSubs.length === 0}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-brand-teal transition-colors appearance-none bg-white disabled:opacity-40 disabled:bg-slate-50"
-                  >
-                    <option value="">Select</option>
-                    {filteredSubs.map((sub) => (
-                      <option key={sub.id} value={sub.id}>{sub.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-2">Employment Type</label>
-                <div className="flex flex-wrap gap-2">
-                  {EMPLOYMENT_TYPES.map((et) => (
-                    <button
-                      key={et}
-                      type="button"
-                      onClick={() => setEmploymentType(et === employmentType ? '' : et)}
-                      className={`px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all duration-150 ${
-                        employmentType === et
-                          ? 'bg-brand-teal/10 text-brand-teal border-brand-teal'
-                          : 'bg-white text-slate-500 border-slate-200 hover:border-brand-teal hover:text-brand-teal'
-                      }`}
-                    >
-                      {et}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <button
-                onClick={handleStep1}
-                disabled={loading}
-                className="w-full bg-brand-teal hover:bg-teal-600 text-white font-semibold text-sm py-3 rounded-xl transition-all duration-200 mt-1 disabled:opacity-50 active:scale-95"
-              >
-                {loading ? 'Please wait...' : 'Continue →'}
-              </button>
-
-              <p className="text-center text-[11px] text-slate-400">Your data is safe with us. We don't spam.</p>
-            </>
-          )}
-
-          {/* ── STEP 2 ── */}
-          {step === 2 && (
-            <>
-              <div>
-                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5">Email Address</label>
-                <input
-                  type="email"
-                  placeholder="rahul@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-brand-teal transition-colors"
-                />
-                {fieldError('email') && (
-                  <p className="text-red-500 text-[11px] mt-1.5 ml-1">{fieldError('email')}</p>
+                {showFieldError('name') && (
+                  <p className="wm-field-err"> {showFieldError('name')}</p>
                 )}
               </div>
 
-              <button
-                onClick={handleStep2}
-                disabled={loading}
-                className="w-full bg-brand-teal hover:bg-teal-600 text-white font-semibold text-sm py-3 rounded-xl transition-all duration-200 mt-1 disabled:opacity-50 active:scale-95"
-              >
-                {loading ? 'Redirecting...' : 'View My Offers →'}
-              </button>
+              <div className="wm-field">
+                <label className="wm-label">Mobile</label>
+                <div className={`wm-phone-wrap${showFieldError('phone') ? ' wm-input-err' : ''}`}>
+                  <span className="wm-phone-prefix">
+                    <IconPhone /> +91
+                  </span>
+                  <input
+                    type="tel"
+                    placeholder="0000000000"
+                    value={phone}
+                    onChange={(e) => { setPhone(e.target.value.replace(/\D/g, '').slice(0, 10)); setErrors((prev) => prev.filter((err) => err.field !== 'phone')); }}
+                    onBlur={() => touch('phone')}
+                    className="wm-phone-input"
+                  />
+                </div>
+                {showFieldError('phone') && (
+                  <p className="wm-field-err"> {showFieldError('phone')}</p>
+                )}
+              </div>
+            </div>
 
-              <button
-                onClick={() => setStep(1)}
-                className="w-full text-center text-xs text-slate-400 hover:text-brand-teal transition-colors"
-              >
-                ← Go back
-              </button>
-            </>
-          )}
+            {/* Category + SubCategory */}
+            <div className="wm-row" style={{ marginBottom: 10 }}>
+              <div>
+                <label className="wm-label">Looking for?</label>
+                <select
+                  value={categoryId}
+                  onChange={(e) => { setCategoryId(e.target.value); setErrors((prev) => prev.filter((err) => err.field !== 'categoryId')); }}
+                  onBlur={() => touch('categoryId')}
+                  className={`wm-select${showFieldError('categoryId') ? ' wm-input-err' : ''}`}
+                >
+                  <option value="">Select</option>
+                  {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                </select>
+                {showFieldError('categoryId') && (
+                  <p className="wm-field-err"> {showFieldError('categoryId')}</p>
+                )}
+              </div>
 
+              {categoryId && filteredSubs.length > 0 && (
+                <div>
+                  <label className="wm-label">{selectedCategoryName} Type</label>
+                  <select
+                    value={subCategoryId}
+                    onChange={(e) => setSubCategoryId(e.target.value)}
+                    className="wm-select"
+                  >
+                    <option value="">Select</option>
+                    {filteredSubs.map((sub) => <option key={sub.id} value={sub.id}>{sub.name}</option>)}
+                  </select>
+                </div>
+              )}
+            </div>
+
+            {/* Employment Type */}
+            <div className="wm-field">
+              <label className="wm-label">Employment Type</label>
+              <div className="wm-chips">
+                {EMPLOYMENT_TYPES.map((et) => (
+                  <button
+                    key={et}
+                    type="button"
+                    onClick={() => setEmploymentType(et === employmentType ? '' : et)}
+                    className={`wm-chip${employmentType === et ? ' active' : ''}`}
+                  >
+                    {et}
+                  </button>
+                ))}
+              </div>
+              {showFieldError('employmentType') && (
+                <p className="wm-field-err" style={{ marginTop: 6 }}> {showFieldError('employmentType')}</p>
+              )}
+            </div>
+
+            {/* Email divider */}
+            <div className="wm-divider">
+              <div className="wm-divider-line" />
+              <span className="wm-divider-text"><IconMail /> Optional — get offers on email</span>
+              <div className="wm-divider-line" />
+            </div>
+
+            {/* Email */}
+            <div className="wm-field">
+              <label className="wm-label">Email Address</label>
+              <input
+                type="email"
+                placeholder="rahul@example.com"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setErrors((prev) => prev.filter((err) => err.field !== 'email')); }}
+                onBlur={() => touch('email')}
+                className={`wm-input${showFieldError('email') ? ' wm-input-err' : ''}`}
+              />
+              {showFieldError('email') && (
+                <p className="wm-field-err"> {showFieldError('email')}</p>
+              )}
+            </div>
+
+            {/* Submit */}
+            <button onClick={handleSubmit} disabled={loading} className="wm-btn">
+              {loading ? 'Please wait...' : 'Check My Offers →'}
+            </button>
+
+            <p className="wm-footer">
+              <IconLock /> Your data is 100% safe. No spam, ever.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };

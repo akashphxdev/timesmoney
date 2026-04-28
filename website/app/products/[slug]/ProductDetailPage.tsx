@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import ConsultationForm from '@/components/ConsultationForm';
+import AdBanner from '@/components/ads/AdBanner';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') ?? '';
 
@@ -40,12 +41,12 @@ export default function ProductDetail({ product }: { product: Product }) {
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center gap-2 text-xs text-slate-400 flex-wrap">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs text-slate-400 flex-wrap">
             <Link href="/" className="hover:text-brand-teal transition-colors">Home</Link>
             <span>/</span>
             {product.category && (
               <>
-                <Link href={`/${product.category.slug}`} className="hover:text-brand-teal transition-colors">
+                <Link href={`/${product.category.slug}`} className="hover:text-brand-teal transition-colors truncate max-w-[80px] sm:max-w-none">
                   {product.category.name}
                 </Link>
                 <span>/</span>
@@ -53,28 +54,30 @@ export default function ProductDetail({ product }: { product: Product }) {
             )}
             {product.subCategory && (
               <>
-                <Link href={`/${product.category?.slug}/${product.subCategory.slug}`} className="hover:text-brand-teal transition-colors">
+                <Link href={`/${product.category?.slug}/${product.subCategory.slug}`} className="hover:text-brand-teal transition-colors truncate max-w-[80px] sm:max-w-none">
                   {product.subCategory.name}
                 </Link>
                 <span>/</span>
               </>
             )}
-            <span className="text-slate-600 font-medium">{product.name}</span>
+            <span className="text-slate-600 font-medium truncate max-w-[120px] sm:max-w-none">{product.name}</span>
           </div>
         </div>
       </div>
 
+      <AdBanner page="PRODUCT_DETAIL" position="TOP" className="mb-1" />
+
       {/* Main Layout */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="lg:grid lg:grid-cols-[1fr_360px] lg:gap-8 flex flex-col gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8">
+        <div className="lg:grid lg:grid-cols-[1fr_360px] lg:gap-8 flex flex-col gap-5 sm:gap-6">
 
           {/* ── LEFT ── */}
-          <div className="min-w-0 space-y-5">
+          <div className="min-w-0 space-y-4 sm:space-y-5">
 
             {/* Header Card */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-6 md:p-8">
-              <div className="flex items-start gap-4 mb-5">
-                <div className="w-14 h-14 rounded-xl bg-brand-teal/5 flex items-center justify-center overflow-hidden flex-shrink-0 border border-brand-teal/20">
+            <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 md:p-8">
+              <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-brand-teal/5 flex items-center justify-center overflow-hidden flex-shrink-0 border border-brand-teal/20">
                   {product.providerLogo ? (
                     <img
                       src={`${BACKEND_URL}${product.providerLogo}`}
@@ -91,7 +94,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                   {product.provider && (
                     <p className="text-xs text-slate-400 mb-0.5">{product.provider}</p>
                   )}
-                  <h1 className="text-xl md:text-3xl font-black text-slate-900 leading-tight mb-2">
+                  <h1 className="text-lg sm:text-xl md:text-3xl font-black text-slate-900 leading-tight mb-2">
                     {product.name}
                   </h1>
                   <div className="flex flex-wrap gap-1.5">
@@ -120,42 +123,42 @@ export default function ProductDetail({ product }: { product: Product }) {
               </div>
 
               {product.shortDescription && (
-                <p className="text-slate-500 text-sm leading-relaxed mb-5 pb-5 border-b border-gray-100">
+                <p className="text-slate-500 text-sm leading-relaxed mb-4 sm:mb-5 pb-4 sm:pb-5 border-b border-gray-100">
                   {product.shortDescription}
                 </p>
               )}
 
               {/* Stats */}
               {(product.interestRate || product.minAmount || product.maxAmount || product.tenure || product.processingFee) && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-5">
                   {product.interestRate && (
-                    <div className="bg-brand-teal/5 rounded-xl p-3 border border-brand-teal/20">
+                    <div className="bg-brand-teal/5 rounded-xl p-2.5 sm:p-3 border border-brand-teal/20">
                       <p className="text-[9px] uppercase tracking-wider text-slate-400 mb-1">Interest Rate</p>
-                      <p className="text-base font-black text-brand-teal">{product.interestRate}</p>
+                      <p className="text-sm sm:text-base font-black text-brand-teal">{product.interestRate}</p>
                     </div>
                   )}
                   {product.minAmount && (
-                    <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                    <div className="bg-gray-50 rounded-xl p-2.5 sm:p-3 border border-gray-100">
                       <p className="text-[9px] uppercase tracking-wider text-slate-400 mb-1">Min Amount</p>
-                      <p className="text-base font-black text-slate-800">₹{product.minAmount}</p>
+                      <p className="text-sm sm:text-base font-black text-slate-800">₹{product.minAmount}</p>
                     </div>
                   )}
                   {product.maxAmount && (
-                    <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                    <div className="bg-gray-50 rounded-xl p-2.5 sm:p-3 border border-gray-100">
                       <p className="text-[9px] uppercase tracking-wider text-slate-400 mb-1">Max Amount</p>
-                      <p className="text-base font-black text-slate-800">₹{product.maxAmount}</p>
+                      <p className="text-sm sm:text-base font-black text-slate-800">₹{product.maxAmount}</p>
                     </div>
                   )}
                   {product.tenure && (
-                    <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                    <div className="bg-gray-50 rounded-xl p-2.5 sm:p-3 border border-gray-100">
                       <p className="text-[9px] uppercase tracking-wider text-slate-400 mb-1">Tenure</p>
-                      <p className="text-base font-black text-slate-800">{product.tenure}</p>
+                      <p className="text-sm sm:text-base font-black text-slate-800">{product.tenure}</p>
                     </div>
                   )}
                   {product.processingFee && (
-                    <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                    <div className="bg-gray-50 rounded-xl p-2.5 sm:p-3 border border-gray-100">
                       <p className="text-[9px] uppercase tracking-wider text-slate-400 mb-1">Processing Fee</p>
-                      <p className="text-base font-black text-slate-800">{product.processingFee}</p>
+                      <p className="text-sm sm:text-base font-black text-slate-800">{product.processingFee}</p>
                     </div>
                   )}
                 </div>
@@ -166,7 +169,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                   href={product.applyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-brand-teal text-white text-sm font-bold px-7 py-2.5 rounded-full hover:bg-green-700 transition-colors shadow-md shadow-green-500/20"
+                  className="inline-flex items-center gap-2 bg-brand-teal text-white text-sm font-bold px-6 sm:px-7 py-2.5 rounded-full hover:bg-green-700 transition-colors shadow-md shadow-green-500/20"
                 >
                   Apply Now
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -176,9 +179,19 @@ export default function ProductDetail({ product }: { product: Product }) {
               )}
             </div>
 
+            {/* ── FORM — mobile & tablet only (shows between header and about) ── */}
+            <div className="lg:hidden">
+              <ConsultationForm
+                productId={product.id}
+                productName={product.name}
+                productSlug={product.slug}
+                formFields={product.formFields}
+              />
+            </div>
+
             {/* About */}
             {product.description && (
-              <div className="bg-white rounded-2xl border border-gray-100 p-6 md:p-8">
+              <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 md:p-8">
                 <h2 className="text-base font-black text-slate-900 mb-4 flex items-center gap-2">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-brand-teal">
                     <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
@@ -193,9 +206,11 @@ export default function ProductDetail({ product }: { product: Product }) {
               </div>
             )}
 
+            <AdBanner page="PRODUCT_DETAIL" position="BETWEEN_CONTENT" className="mb-1" />
+
             {/* Features / Benefits / Eligibility */}
             {(product.features || product.benefits || product.eligibility) && (
-              <div className="bg-white rounded-2xl border border-gray-100 p-6 md:p-8 space-y-8">
+              <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
 
                 {product.features && (
                   <div>
@@ -207,7 +222,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                     </h3>
                     <ul className="space-y-3">
                       {(product.features as string[]).map((f: string, i: number) => (
-                        <li key={i} className="text-[15px] leading-relaxed tracking-wide text-slate-600 flex gap-3">
+                        <li key={i} className="text-sm sm:text-[15px] leading-relaxed tracking-wide text-slate-600 flex gap-3">
                           <svg width="13" height="13" viewBox="0 0 12 12" fill="none" className="text-brand-teal mt-1 flex-shrink-0">
                             <path d="M1.5 6l3 3 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
@@ -219,7 +234,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                 )}
 
                 {product.benefits && (
-                  <div className={product.features ? 'pt-6 border-t border-gray-100' : ''}>
+                  <div className={product.features ? 'pt-5 sm:pt-6 border-t border-gray-100' : ''}>
                     <h3 className="text-base font-black text-slate-900 mb-4 flex items-center gap-2 tracking-wide">
                       <svg width="16" height="16" viewBox="0 0 14 14" fill="none" className="text-brand-teal flex-shrink-0">
                         <path d="M7 1l1.5 4h4l-3.5 2.5 1.5 4L7 9 3.5 11.5l1.5-4L1.5 5h4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
@@ -228,7 +243,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                     </h3>
                     <ul className="space-y-3">
                       {(product.benefits as string[]).map((b: string, i: number) => (
-                        <li key={i} className="text-[15px] leading-relaxed tracking-wide text-slate-600 flex gap-3">
+                        <li key={i} className="text-sm sm:text-[15px] leading-relaxed tracking-wide text-slate-600 flex gap-3">
                           <svg width="13" height="13" viewBox="0 0 12 12" fill="none" className="text-brand-teal mt-1 flex-shrink-0">
                             <path d="M1.5 6l3 3 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
@@ -240,7 +255,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                 )}
 
                 {product.eligibility && (
-                  <div className={(product.features || product.benefits) ? 'pt-6 border-t border-gray-100' : ''}>
+                  <div className={(product.features || product.benefits) ? 'pt-5 sm:pt-6 border-t border-gray-100' : ''}>
                     <h3 className="text-base font-black text-slate-900 mb-4 flex items-center gap-2 tracking-wide">
                       <svg width="16" height="16" viewBox="0 0 14 14" fill="none" className="text-brand-teal flex-shrink-0">
                         <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5"/>
@@ -250,7 +265,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                     </h3>
                     <ul className="space-y-3">
                       {(product.eligibility as string[]).map((e: string, i: number) => (
-                        <li key={i} className="text-[15px] leading-relaxed tracking-wide text-slate-600 flex gap-3">
+                        <li key={i} className="text-sm sm:text-[15px] leading-relaxed tracking-wide text-slate-600 flex gap-3">
                           <svg width="13" height="13" viewBox="0 0 12 12" fill="none" className="text-brand-teal mt-1 flex-shrink-0">
                             <path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
@@ -266,8 +281,8 @@ export default function ProductDetail({ product }: { product: Product }) {
 
           </div>
 
-          {/* ── RIGHT — Sticky Form ── */}
-          <div className="self-start sticky top-20">
+          {/* ── RIGHT — Sticky Form (desktop only) ── */}
+          <div className="hidden lg:block self-start sticky top-20">
             <ConsultationForm
               productId={product.id}
               productName={product.name}
@@ -278,6 +293,8 @@ export default function ProductDetail({ product }: { product: Product }) {
 
         </div>
       </div>
+
+      <AdBanner page="PRODUCT_DETAIL" position="BOTTOM" className="mb-1" />
     </main>
   );
 }

@@ -18,8 +18,8 @@ interface AdEvent {
   ad: {
     id: string;
     title: string;
-    page: string;
-    position: string;
+    pages: string[];
+    positions: string[];
   };
 }
 
@@ -263,7 +263,7 @@ export default function AdsEventsPage() {
                       <td className="px-4 py-4">
                         <p className="text-sm font-semibold text-gray-900 truncate">{event.ad.title}</p>
                         <p className="text-xs text-gray-400 mt-0.5 truncate">
-                          {event.ad.page} · {event.ad.position.replace(/_/g, ' ')}
+                          {event.ad.pages.join(', ')} · {event.ad.positions.map(p => p.replace(/_/g, ' ')).join(', ')}
                         </p>
                       </td>
 

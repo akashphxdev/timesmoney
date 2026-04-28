@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-
+import AdBanner from '@/components/ads/AdBanner';
 const formatINR = (n: number): string => {
   n = Math.round(n);
   if (n >= 10000000) return '₹' + (n / 10000000).toFixed(2) + ' Cr';
@@ -68,6 +68,7 @@ export default function SIPCalculator() {
 
   return (
     <div className="font-sans">
+       <AdBanner page="CALCULATOR" position="TOP" />
 
       {/* ── Hero Banner ── */}
       <div className="bg-brand-teal py-8 px-6 md:px-10 mb-8">
@@ -231,12 +232,15 @@ export default function SIPCalculator() {
 
               <p className="text-[11px] text-slate-400 border-t border-gray-100 pt-4 leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
                 <span className="font-semibold text-slate-500">Disclaimer:</span> Results are illustrative only. Actual returns vary with market conditions. Mutual fund investments are subject to market risks — read all scheme-related documents carefully.
+
               </p>
+              <AdBanner page="CALCULATOR" position="BOTTOM" className="mt-4" />
             </div>
           </div>
 
           {/* ── Right: Results (sticky) ── */}
           <div className="flex flex-col gap-4 lg:sticky lg:top-24">
+            <AdBanner page="CALCULATOR" position="SIDEBAR" className="mb-2" />
 
             {/* Total Value card */}
             <div className="bg-brand-teal rounded-2xl p-6">

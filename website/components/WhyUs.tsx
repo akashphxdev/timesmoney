@@ -1,5 +1,5 @@
 import React from 'react';
-
+import AdBanner from '@/components/ads/AdBanner';
 export const WhyUs = () => {
   const features = [
     {
@@ -79,6 +79,7 @@ export const WhyUs = () => {
 
   return (
     <section className="bg-white py-16 relative overflow-hidden">
+      <AdBanner page="HOME" position="BETWEEN_CONTENT" />
 
       {/* Soft teal blob */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-teal/5 rounded-full blur-[120px] pointer-events-none -translate-y-1/3 translate-x-1/3" />

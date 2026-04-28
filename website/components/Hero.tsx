@@ -1,7 +1,7 @@
-
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import AdBanner from '@/components/ads/AdBanner';
 
 interface SubCategory {
   id: string;
@@ -45,11 +45,20 @@ export const Hero = ({ categories, subCategories }: HeroProps) => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ field: string; message: string }[]>([]);
 
+  const [savedName, setSavedName] = useState('');
+
+  useEffect(() => {
+    const stored = localStorage.getItem('tm_user_name');
+    if (stored) setSavedName(stored);
+  }, []);
+
   const filteredSubs = subCategories.filter((s) => s.categoryId === categoryId);
 
   useEffect(() => { setSubCategoryId(''); }, [categoryId]);
 
   const fieldError = (field: string) => errors.find((e) => e.field === field)?.message;
+
+  const selectedCategoryName = categories.find((c) => c.id === categoryId)?.name ?? '';
 
   const cards = [
     { badge: "PERSONAL LOAN", title: "Get instant funds up to", amount: "₹50,00,000", features: ["Starting 9.98%*", "Instant Approval"], color: "from-blue-600 to-blue-800", type: "VISA" },
@@ -94,6 +103,10 @@ export const Hero = ({ categories, subCategories }: HeroProps) => {
         subCategory: json.data.subCategorySlug ?? selectedSub?.slug ?? '',
       });
 
+      localStorage.setItem('tm_user_name', name.trim());
+      localStorage.setItem('tm_user_phone', phone.trim());
+      setSavedName(name.trim());
+
       setStep(2);
     } catch {
       setErrors([{ field: 'general', message: 'Network error. Please try again.' }]);
@@ -119,6 +132,10 @@ export const Hero = ({ categories, subCategories }: HeroProps) => {
         return;
       }
 
+      if (email.trim()) {
+        localStorage.setItem('tm_user_email', email.trim());
+      }
+
       const { category, subCategory } = redirectSlugs;
       const path = subCategory ? `/${category}/${subCategory}` : `/${category}`;
       router.push(path);
@@ -132,18 +149,30 @@ export const Hero = ({ categories, subCategories }: HeroProps) => {
 
   return (
     <section className="bg-white py-3 md:py-5 overflow-hidden">
+      <AdBanner page="HOME" position="TOP" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-center">
 
           {/* ── Left: Text + Card Slider ── */}
           <div className="flex flex-col gap-3">
 
+            {/* Returning user greeting */}
+            {savedName && (
+              <div className="inline-flex items-center gap-2 w-fit bg-brand-teal/10 border border-brand-teal/20 px-4 py-2 rounded-full">
+                <span className="text-sm font-semibold text-brand-teal">
+                  Welcome back, {savedName}!
+                </span>
+              </div>
+            )}
+
             {/* Trust badge */}
-            <div className="inline-flex items-center gap-2 w-fit">
-              <span className="text-[10px] font-semibold tracking-widest uppercase text-brand-teal border border-brand-teal/30 bg-brand-teal/5 px-3 py-1 rounded-full">
-                🇮🇳 Trusted by 10L+ Indians
-              </span>
-            </div>
+            {!savedName && (
+              <div className="inline-flex items-center gap-2 w-fit">
+                <span className="text-[10px] font-semibold tracking-widest uppercase text-brand-teal border border-brand-teal/30 bg-brand-teal/5 px-3 py-1 rounded-full">
+                  🇮🇳 Trusted by 10L+ Indians
+                </span>
+              </div>
+            )}
 
             {/* Heading */}
             <div>
@@ -155,33 +184,39 @@ export const Hero = ({ categories, subCategories }: HeroProps) => {
                 <span className="text-brand-teal">Best Offers,</span>{' '}
                 <span className="text-slate-400 font-light">Right Here.</span>
               </h1>
-              <p className="mt-2 text-sm text-slate-500 max-w-md leading-relaxed"
-                style={{ fontFamily: 'var(--font-body)' }}>
+              <p
+                className="mt-2 text-sm text-slate-500 max-w-md leading-relaxed"
+                style={{ fontFamily: 'var(--font-body)' }}
+              >
                 Compare and apply for Loans, Credit Cards &amp; Investments from India&apos;s top banks — in minutes.
               </p>
             </div>
 
             {/* Stats row */}
-            <div className="flex items-center gap-6 py-2 border-y border-gray-100">
+            <div className="flex items-center gap-4 sm:gap-6 py-2 border-y border-gray-100">
               {[
                 { val: '8.5%', label: 'Starting Rate' },
                 { val: '₹50L', label: 'Max Loan' },
                 { val: '2 Min', label: 'Approval' },
               ].map((s) => (
                 <div key={s.label} className="flex flex-col">
-                  <span className="text-lg font-semibold text-slate-800" style={{ fontFamily: 'var(--font-display)' }}>{s.val}</span>
-                  <span className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">{s.label}</span>
+                  <span className="text-base sm:text-lg font-semibold text-slate-800" style={{ fontFamily: 'var(--font-display)' }}>
+                    {s.val}
+                  </span>
+                  <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-medium">
+                    {s.label}
+                  </span>
                 </div>
               ))}
             </div>
 
-            {/* Card Slider */}
-            <div className="relative w-full max-w-xs h-[200px] overflow-hidden rounded-2xl">
+            {/* Card Slider — full width on mobile, max-xs on larger */}
+            <div className="relative w-full sm:max-w-xs h-[190px] sm:h-[200px] overflow-hidden rounded-2xl">
               <div className="absolute inset-0 flex items-start justify-center p-3">
                 {cards.map((card, idx) => (
                   <div
                     key={idx}
-                    className={`absolute w-full h-44 rounded-xl bg-gradient-to-br ${card.color} p-6 text-white shadow-xl transition-all duration-700 ease-in-out transform overflow-hidden ${
+                    className={`absolute w-full h-44 rounded-xl bg-gradient-to-br ${card.color} p-5 sm:p-6 text-white shadow-xl transition-all duration-700 ease-in-out transform overflow-hidden ${
                       idx === currentIdx
                         ? 'opacity-100 translate-x-0 scale-100 z-20'
                         : idx === (currentIdx + 1) % cards.length
@@ -200,7 +235,7 @@ export const Hero = ({ categories, subCategories }: HeroProps) => {
                     <div className="space-y-3">
                       <div>
                         <p className="text-white/70 text-[9px] font-bold uppercase tracking-widest mb-0.5">{card.title}</p>
-                        <div className="text-2xl font-mono font-black tracking-tight text-white drop-shadow">{card.amount}</div>
+                        <div className="text-xl sm:text-2xl font-mono font-black tracking-tight text-white drop-shadow">{card.amount}</div>
                       </div>
                       <div className="flex justify-between items-end">
                         <div className="space-y-0.5">
@@ -209,7 +244,7 @@ export const Hero = ({ categories, subCategories }: HeroProps) => {
                             {card.features.map(f => <span key={f} className="text-[10px] font-bold">✓ {f}</span>)}
                           </div>
                         </div>
-                        <span className="text-xl font-black italic tracking-tighter drop-shadow">{card.type}</span>
+                        <span className="text-lg sm:text-xl font-black italic tracking-tighter drop-shadow">{card.type}</span>
                       </div>
                     </div>
                     <div className="absolute top-0 right-0 w-28 h-28 bg-white/5 rounded-full -mr-14 -mt-14 blur-2xl opacity-50" />
@@ -218,15 +253,19 @@ export const Hero = ({ categories, subCategories }: HeroProps) => {
               </div>
               <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex space-x-1.5 z-30">
                 {cards.map((_, i) => (
-                  <div key={i} className={`h-1 rounded-full transition-all duration-300 ${i === currentIdx ? 'w-5 bg-brand-teal' : 'w-1 bg-gray-300'}`} />
+                  <div
+                    key={i}
+                    className={`h-1 rounded-full transition-all duration-300 ${i === currentIdx ? 'w-5 bg-brand-teal' : 'w-1 bg-gray-300'}`}
+                  />
                 ))}
               </div>
             </div>
           </div>
 
           {/* ── Right: Lead Form ── */}
-          <div className="flex justify-center lg:justify-end">
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 w-full max-w-md">
+          {/* Mobile pe top margin add, desktop pe justify-end */}
+          <div className="flex justify-center lg:justify-end mt-2 lg:mt-0">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 sm:p-6 w-full max-w-md">
 
               {/* Form header */}
               <div className="mb-4">
@@ -234,7 +273,11 @@ export const Hero = ({ categories, subCategories }: HeroProps) => {
                   className="text-lg text-slate-800"
                   style={{ fontFamily: 'var(--font-display)' }}
                 >
-                  {step === 1 ? 'Get Your Best Offers' : 'One Last Step!'}
+                  {step === 1
+                    ? savedName
+                      ? `Check new offers, ${savedName}!`
+                      : 'Get Your Best Offers'
+                    : 'One Last Step!'}
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5" style={{ fontFamily: 'var(--font-body)' }}>
                   {step === 1 ? 'Fill in your details to see personalised offers' : 'Enter your email to receive offers'}
@@ -271,6 +314,7 @@ export const Hero = ({ categories, subCategories }: HeroProps) => {
                       <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium border-r border-gray-200 pr-2.5">+91</span>
                       <input
                         type="tel"
+                        inputMode="numeric"
                         placeholder="000 000 0000"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
@@ -280,34 +324,38 @@ export const Hero = ({ categories, subCategories }: HeroProps) => {
                     {fieldError('phone') && <p className="text-red-500 text-[10px] mt-1">{fieldError('phone')}</p>}
                   </div>
 
-                  {/* Category + SubCategory */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Category</label>
-                      <select
-                        value={categoryId}
-                        onChange={(e) => setCategoryId(e.target.value)}
-                        className="w-full px-3.5 py-2.5 border border-gray-200 bg-gray-50 rounded-lg focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal focus:bg-white outline-none transition-all text-slate-600 text-sm appearance-none cursor-pointer"
-                      >
-                        <option value="">Select</option>
-                        {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
-                      </select>
-                      {fieldError('categoryId') && <p className="text-red-500 text-[10px] mt-1">{fieldError('categoryId')}</p>}
-                    </div>
+                  {/* Category */}
+                  <div>
+                    <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                      What are you looking for?
+                    </label>
+                    <select
+                      value={categoryId}
+                      onChange={(e) => setCategoryId(e.target.value)}
+                      className="w-full px-3.5 py-2.5 border border-gray-200 bg-gray-50 rounded-lg focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal focus:bg-white outline-none transition-all text-slate-600 text-sm appearance-none cursor-pointer"
+                    >
+                      <option value="">Select</option>
+                      {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                    </select>
+                    {fieldError('categoryId') && <p className="text-red-500 text-[10px] mt-1">{fieldError('categoryId')}</p>}
+                  </div>
 
+                  {/* SubCategory */}
+                  {categoryId && filteredSubs.length > 0 && (
                     <div>
-                      <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Sub Category</label>
+                      <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                        {selectedCategoryName} Type
+                      </label>
                       <select
                         value={subCategoryId}
                         onChange={(e) => setSubCategoryId(e.target.value)}
-                        disabled={!categoryId || filteredSubs.length === 0}
-                        className="w-full px-3.5 py-2.5 border border-gray-200 bg-gray-50 rounded-lg focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal focus:bg-white outline-none transition-all text-slate-600 text-sm appearance-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="w-full px-3.5 py-2.5 border border-gray-200 bg-gray-50 rounded-lg focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal focus:bg-white outline-none transition-all text-slate-600 text-sm appearance-none cursor-pointer"
                       >
                         <option value="">Select</option>
                         {filteredSubs.map((sub) => <option key={sub.id} value={sub.id}>{sub.name}</option>)}
                       </select>
                     </div>
-                  </div>
+                  )}
 
                   {/* Employment Type */}
                   <div>
@@ -345,6 +393,7 @@ export const Hero = ({ categories, subCategories }: HeroProps) => {
                     <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Email Address</label>
                     <input
                       type="email"
+                      inputMode="email"
                       placeholder="yourname@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -365,7 +414,7 @@ export const Hero = ({ categories, subCategories }: HeroProps) => {
 
                   <button
                     onClick={() => setStep(1)}
-                    className="w-full text-center text-xs text-slate-400 hover:text-brand-teal transition-colors"
+                    className="w-full text-center text-xs text-slate-400 hover:text-brand-teal transition-colors py-1"
                   >
                     ← Go back
                   </button>

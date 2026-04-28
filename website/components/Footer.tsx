@@ -33,14 +33,14 @@ export const Footer = () => {
   }, []);
 
   return (
-    <footer className="bg-brand-navy text-white pt-20 pb-10">
+    <footer className="bg-brand-navy text-white pt-12 md:pt-20 pb-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Top Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-12 md:mb-20">
 
           {/* Column 1 - Brand */}
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             <Link href="/" className="flex items-center cursor-pointer">
               <span className="text-2xl font-bold tracking-tight">
                 <span className="text-white">T</span>
@@ -50,7 +50,7 @@ export const Footer = () => {
               </span>
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
-              Compare and Apply for loans, Credit Cards, and investments from India&apos;s top banks. 
+              Compare and Apply for loans, Credit Cards, and investments from India&apos;s top banks.
               Get the best deals, lowest interest rates, and expert financial guidance — all in one place.
             </p>
           </div>
@@ -83,8 +83,8 @@ export const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500 font-medium font-sans">
-          <p>© 2024 Times / Timesmoney.com</p>
-          <div className="flex items-center space-x-4">
+          <p className="text-center md:text-left">© 2024 Times / Timesmoney.com</p>
+          <div className="flex flex-wrap justify-center md:justify-end items-center gap-x-4 gap-y-2">
             <Link href="/privacy-policy"   className="hover:text-slate-400 transition-colors">Privacy Policy</Link>
             <span className="text-slate-700">•</span>
             <Link href="/terms-conditions" className="hover:text-slate-400 transition-colors">Terms & Conditions</Link>

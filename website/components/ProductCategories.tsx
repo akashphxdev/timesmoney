@@ -77,11 +77,10 @@ export const ProductCategories = ({ categories, subCategories }: ProductCategori
 
                 {/* ── SubCategories ── */}
                 {subs.length > 0 && (
-                  <div className="flex justify-evenly flex-wrap gap-y-6 mx-[150px]">
+                  <div className="flex justify-evenly flex-wrap gap-y-6 mx-0 sm:mx-[75px] lg:mx-[150px]">
                     {subs.map((sub, index) => (
                       <Link key={sub.id} href={`/${cat.slug}/${sub.slug}`}>
-                        <div className="flex flex-col items-center gap-2 cursor-pointer group w-20">
-                          {/* Icon with shake animation */}
+                        <div className="flex flex-col items-center gap-2 cursor-pointer group w-16 sm:w-20">
                           {sub.imageUrl ? (
                             <img
                               src={`${BACKEND_URL}${sub.imageUrl}`}
@@ -97,7 +96,6 @@ export const ProductCategories = ({ categories, subCategories }: ProductCategori
                               {sub.name.charAt(0)}
                             </div>
                           )}
-                          {/* Naam neeche */}
                           <span className="text-xs font-semibold text-slate-600 group-hover:text-brand-teal transition-colors text-center leading-tight">
                             {sub.name}
                           </span>

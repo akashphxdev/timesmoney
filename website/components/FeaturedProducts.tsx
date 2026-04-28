@@ -5,8 +5,6 @@ import Link from 'next/link';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') ?? '';
 
-// ==================== TYPES ====================
-
 interface Product {
   id: string;
   name: string;
@@ -30,15 +28,12 @@ interface FeaturedProductsProps {
   products: Product[];
 }
 
-// ==================== HELPERS ====================
-
 const ArrowIcon = () => (
   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
   </svg>
 );
 
-// Returns an array of up to 4 key stats depending on what data is available
 const getStats = (product: Product): { label: string; value: string; unit?: string }[] => {
   const stats: { label: string; value: string; unit?: string }[] = [];
 
@@ -63,8 +58,6 @@ const getStats = (product: Product): { label: string; value: string; unit?: stri
   return stats.slice(0, 4);
 };
 
-// ==================== PRODUCT CARD ====================
-
 const ProductCard = ({ product }: { product: Product }) => {
   const stats = getStats(product);
 
@@ -84,10 +77,9 @@ const ProductCard = ({ product }: { product: Product }) => {
         </div>
       )}
 
-      {/* Card Top — Provider + Name + Badge */}
+      {/* Card Top */}
       <div className="p-4 border-b border-gray-100">
         <div className="flex items-center gap-2.5 mb-2.5">
-          {/* Provider Logo */}
           <div className="w-9 h-9 rounded-lg border border-gray-100 bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0">
             {product.providerLogo ? (
               <img
@@ -104,12 +96,10 @@ const ProductCard = ({ product }: { product: Product }) => {
           <span className="text-xs text-slate-400 font-medium">{product.provider ?? 'Provider'}</span>
         </div>
 
-        {/* Product Name */}
         <h4 className="text-sm font-bold text-slate-800 leading-snug group-hover:text-brand-teal transition-colors">
           {product.name}
         </h4>
 
-        {/* Badge */}
         {product.badge && (
           <span className="mt-2 inline-block text-[10px] font-semibold px-2.5 py-1 rounded-full bg-brand-teal/10 text-brand-teal border border-brand-teal/20">
             {product.badge}
@@ -121,7 +111,7 @@ const ProductCard = ({ product }: { product: Product }) => {
       {stats.length > 0 && (
         <div className="grid grid-cols-2 divide-x divide-y divide-gray-100 border-b border-gray-100">
           {stats.map((stat, i) => (
-            <div key={i} className="px-4 py-3">
+            <div key={i} className="px-3 sm:px-4 py-3">
               <p className="text-[10px] text-slate-400 mb-0.5">{stat.label}</p>
               <p className="text-sm font-bold text-slate-800">
                 {stat.value}{' '}
@@ -143,12 +133,12 @@ const ProductCard = ({ product }: { product: Product }) => {
         </div>
       )}
 
-      {/* Footer — CTA */}
+      {/* Footer CTA */}
       <div className="px-4 py-3 mt-auto flex items-center justify-between">
-        <span className="text-[10px] text-slate-400">
+        <span className="text-[10px] text-slate-400 truncate mr-2">
           {product.subCategory?.name ?? product.category?.name ?? ''}
         </span>
-        <span className="flex items-center gap-1.5 text-brand-teal font-bold text-[11px] uppercase tracking-widest group-hover:gap-2.5 transition-all">
+        <span className="flex-shrink-0 flex items-center gap-1.5 text-brand-teal font-bold text-[11px] uppercase tracking-widest group-hover:gap-2.5 transition-all">
           Apply Now
           <ArrowIcon />
         </span>
@@ -157,22 +147,20 @@ const ProductCard = ({ product }: { product: Product }) => {
   );
 };
 
-// ==================== FEATURED PRODUCTS SECTION ====================
-
 export const FeaturedProducts = ({ products }: FeaturedProductsProps) => {
   if (!products || products.length === 0) return null;
 
   return (
-    <section className="bg-gray-50 py-20">
+    <section className="bg-gray-50 py-12 sm:py-16 md:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-7 sm:mb-10 gap-3 sm:gap-4">
           <div className="max-w-xl">
-            <p className="text-brand-teal text-xs font-black uppercase tracking-[0.2em] mb-3">
+            <p className="text-brand-teal text-xs font-black uppercase tracking-[0.2em] mb-2 sm:mb-3">
               Our Products
             </p>
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-2 leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 mb-2 leading-tight">
               Featured Products
             </h2>
             <p className="text-slate-500 text-sm">
@@ -189,7 +177,7 @@ export const FeaturedProducts = ({ products }: FeaturedProductsProps) => {
         </div>
 
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
