@@ -59,10 +59,10 @@ const LinkedImage = Image.extend({
     };
   },
   renderHTML({ HTMLAttributes }) {
-    const { href, target, ...rest } = HTMLAttributes;
-    const img = ['img', rest];
-    return href ? ['a', { href, target }, img] : img;
-  },
+  const { href, target, ...rest } = HTMLAttributes;
+  const img = ['img', rest];
+  return (href ? ['a', { href, target }, img] : img) as any;
+},
   parseHTML() {
     return [
       {

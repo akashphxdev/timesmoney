@@ -323,3 +323,28 @@ model CmsAdEvent {
   @@index([deviceType])
   @@map("cms_ad_events")
 }
+
+
+model CmsSettings {
+  id                  String   @id @default(cuid())
+  key                 String   @unique @default("global")  // ← singleton lock
+
+  // Contact
+  whatsappNo          String?
+  callingNo           String?
+  supportEmail        String?
+
+  // Social Links
+  instagramUrl        String?
+  linkedinUrl         String?
+
+  // Auto Notifications
+  autoMailEnabled     Boolean  @default(false)
+  autoWhatsappEnabled Boolean  @default(false)
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  maintenanceMode     Boolean  @default(false)
+
+  @@map("cms_settings")
+}

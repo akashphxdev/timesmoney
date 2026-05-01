@@ -177,7 +177,7 @@ export default function ProductsPage() {
                 <AiOutlineDelete size={22} className="text-red-500" />
               </div>
               <h3 className="text-base font-bold text-gray-900">Delete Product?</h3>
-              <p className="text-sm text-gray-400">Product aur uski images delete ho jayengi!</p>
+              <p className="text-sm text-gray-400">Are you sure you want to delete this product? This action cannot be undone.</p>
             </div>
             <div className="flex items-center gap-3 px-6 pb-5">
               <button onClick={() => setDeleteId(null)} className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl">Cancel</button>

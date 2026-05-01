@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "nodemon --exec ts-node src/server.ts",
     "start": "ts-node server.ts",
+    "build": "prisma generate && tsc && xcopy /E /I /Y src\\generated dist\\src\\generated",
+    "start:prod": "node dist/src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -23,7 +25,8 @@
     "multer": "^2.1.1",
     "nodemailer": "^8.0.7",
     "pg": "^8.20.0",
-    "react-quill-new": "^3.8.3"
+    "react-quill-new": "^3.8.3",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

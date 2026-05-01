@@ -16,7 +16,7 @@ interface Testimonial {
 export const Testimonials = ({ testimonials }: { testimonials: Testimonial[] }) => {
   const [cur, setCur] = useState(0);
   const [show, setShow] = useState(3);
-  const timerRef = useRef<NodeJS.Timeout>();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Responsive: visible cards count
   useEffect(() => {
@@ -47,11 +47,13 @@ export const Testimonials = ({ testimonials }: { testimonials: Testimonial[] }) 
     timerRef.current = setInterval(() => {
       setCur(prev => (prev >= max ? 0 : prev + 1));
     }, 3200);
-    return () => clearInterval(timerRef.current);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [max]);
 
   const resetTimer = (n: number) => {
-    clearInterval(timerRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
     const clamped = Math.max(0, Math.min(n, max));
     setCur(clamped);
     timerRef.current = setInterval(() => {

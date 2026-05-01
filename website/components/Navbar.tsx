@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import api from '@/lib/api';
 import Link from 'next/link';
 
 // =====================
@@ -24,6 +23,24 @@ interface Blog {
   id: string;
   title: string;
   slug: string;
+}
+
+interface Settings {
+  whatsappNo: string | null;
+  callingNo: string | null;
+  supportEmail: string | null;
+  instagramUrl: string | null;
+  linkedinUrl: string | null;
+  autoMailEnabled: boolean;
+  autoWhatsappEnabled: boolean;
+  maintenanceMode: boolean;
+}
+
+// ✅ Props — layout.tsx se server data aayega
+interface NavbarProps {
+  categories: Category[];
+  blogs: Blog[];
+  settings: Settings | null;
 }
 
 // =====================
@@ -50,9 +67,8 @@ const tools = [
   { name: 'Retirement Calculator', slug: 'retirement-calculator' },
 ];
 
-export const Navbar = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [blogs, setBlogs] = useState<Blog[]>([]);
+export const Navbar = ({ categories, blogs, settings }: NavbarProps) => {
+  // ✅ useEffect fetch hata diya — data ab props se aata hai
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMobileSection, setOpenMobileSection] = useState<string | null>(null);
 
@@ -65,19 +81,6 @@ export const Navbar = () => {
     }
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
-
-  useEffect(() => {
-    const fetchHeaderData = async () => {
-      try {
-        const res = await api.get('/web/header-data');
-        setCategories(res.data.data.categories);
-        setBlogs(res.data.data.blogs);
-      } catch (err) {
-        console.error('Header data fetch failed:', err);
-      }
-    };
-    fetchHeaderData();
-  }, []);
 
   return (
     <header className="sticky top-0 z-50">
@@ -129,8 +132,6 @@ export const Navbar = () => {
         .nav-chevron {
           transition: transform 0.2s ease;
         }
-
-        /* Mobile menu slide-in animation */
         @keyframes mobileSlideIn {
           from { opacity: 0; transform: translateY(-8px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -138,8 +139,6 @@ export const Navbar = () => {
         .mobile-menu-animate {
           animation: mobileSlideIn 0.2s ease forwards;
         }
-
-        /* Mobile submenu expand */
         @keyframes subExpand {
           from { opacity: 0; max-height: 0; }
           to   { opacity: 1; max-height: 500px; }
@@ -150,18 +149,18 @@ export const Navbar = () => {
         }
       `}</style>
 
-      {/* Topbar — desktop only (unchanged) */}
+      {/* Topbar — desktop only */}
       <div className="bg-gray-50 border-b border-gray-100 py-1 hidden md:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-end items-center space-x-6">
           <a
-            href="tel:1800-123-4567"
+            href={settings?.callingNo ? `tel:${settings.callingNo}` : '#'}
             className="flex items-center space-x-2 text-xs font-semibold text-slate-500 hover:text-brand-teal transition-colors"
             style={{ fontFamily: 'var(--font-body)' }}
           >
             <svg className="w-3.5 h-3.5 text-brand-teal icon-phone" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
             </svg>
-            <span>Talk to Expert</span>
+            <span>{settings?.callingNo ? `Call: ${settings.callingNo}` : 'Talk to Expert'}</span>
           </a>
           <div className="h-3 w-[1px] bg-gray-300" />
           <a
@@ -192,7 +191,7 @@ export const Navbar = () => {
               </span>
             </Link>
 
-            {/* Desktop Nav Links — unchanged */}
+            {/* Desktop Nav Links */}
             <div className="hidden md:flex items-center space-x-1">
 
               {categories.map((category) => (
@@ -238,7 +237,7 @@ export const Navbar = () => {
                 </div>
               ))}
 
-              {/* Tools (Static) */}
+              {/* Tools */}
               <div className="nav-item relative px-1 py-2">
                 <Link href="/">
                   <button
@@ -251,7 +250,6 @@ export const Navbar = () => {
                     </svg>
                   </button>
                 </Link>
-
                 <div className="nav-dropdown absolute left-0 top-full pt-2 z-[60]" style={{ minWidth: '280px' }}>
                   <div className="bg-white border border-gray-100 shadow-xl rounded-2xl overflow-hidden">
                     <div className="px-4 pt-3 pb-2 border-b border-gray-100">
@@ -291,7 +289,6 @@ export const Navbar = () => {
                     )}
                   </button>
                 </Link>
-
                 {blogs.length > 0 && (
                   <div className="nav-dropdown absolute right-0 top-full pt-2 z-[60]" style={{ minWidth: '280px' }}>
                     <div className="bg-white border border-gray-100 shadow-xl rounded-2xl overflow-hidden">
@@ -339,9 +336,8 @@ export const Navbar = () => {
 
             </div>
 
-            {/* Mobile: Right side — Auth + Hamburger */}
+            {/* Mobile: Right side */}
             <div className="md:hidden flex items-center space-x-2">
-              {/* Quick Sign In on mobile topbar */}
               <a
                 href="#"
                 className="text-xs font-semibold text-slate-600 px-3 py-1.5 border border-gray-200 rounded-full hover:border-brand-teal hover:text-brand-teal transition-colors"
@@ -349,7 +345,6 @@ export const Navbar = () => {
               >
                 Sign In
               </a>
-              {/* Hamburger */}
               <button
                 className="text-slate-600 p-2 rounded-md hover:bg-gray-100 transition-colors active:scale-95"
                 onClick={() => setMobileOpen(!mobileOpen)}
@@ -373,27 +368,24 @@ export const Navbar = () => {
         {/* ===================== MOBILE MENU ===================== */}
         {mobileOpen && (
           <>
-            {/* Backdrop */}
             <div
               className="md:hidden fixed inset-0 top-[calc(3.5rem+1px)] bg-black/30 z-40"
               onClick={() => setMobileOpen(false)}
             />
-
-            {/* Menu Panel */}
             <div className="md:hidden mobile-menu-animate fixed left-0 right-0 top-[calc(3.5rem+1px)] z-50 bg-white border-t border-gray-100 shadow-xl overflow-y-auto"
               style={{ maxHeight: 'calc(100dvh - 3.5rem - 1px)' }}
             >
-              {/* Quick links bar — Talk to Expert & Get App (mobile) */}
+              {/* Quick links bar — mobile */}
               <div className="flex items-center justify-center space-x-6 py-2.5 px-4 bg-gray-50 border-b border-gray-100">
                 <a
-                  href="tel:1800-123-4567"
+                  href={settings?.callingNo ? `tel:${settings.callingNo}` : '#'}
                   className="flex items-center space-x-1.5 text-xs font-semibold text-slate-500 hover:text-brand-teal transition-colors"
                   style={{ fontFamily: 'var(--font-body)' }}
                 >
                   <svg className="w-3.5 h-3.5 text-brand-teal icon-phone" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
-                  <span>Talk to Expert</span>
+                  <span>{settings?.callingNo ? `Call: ${settings.callingNo}` : 'Talk to Expert'}</span>
                 </a>
                 <div className="h-3 w-[1px] bg-gray-300" />
                 <a
@@ -428,7 +420,6 @@ export const Navbar = () => {
                         </svg>
                       )}
                     </button>
-
                     {openMobileSection === category.id && category.subCategories.length > 0 && (
                       <div className="sub-expand ml-3 mb-1 border-l-2 border-teal-100 pl-3 space-y-0.5">
                         {category.subCategories.map((sub) => (

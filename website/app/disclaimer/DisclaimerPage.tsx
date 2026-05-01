@@ -1,6 +1,23 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import api from '@/lib/api';
+
+interface Settings {
+  callingNo: string;
+  supportEmail: string;
+}
 
 export default function DisclaimerPage() {
+  const [settings, setSettings] = useState<Settings | null>(null);
+
+  useEffect(() => {
+    api.get('/public/settings')
+      .then(res => setSettings(res.data.data))
+      .catch(err => console.error('Settings fetch failed:', err));
+  }, []);
+
   return (
     <main className="min-h-screen bg-gray-50">
 
@@ -36,7 +53,7 @@ export default function DisclaimerPage() {
 
           <div>
             <p>
-              Times Money (<strong className="text-slate-800">timesmoney.com</strong>) is a financial
+              Times Money (<strong className="text-slate-800">timesmoney.in</strong>) is a financial
               comparison and information platform. By accessing and using our website, you accept and
               agree to be bound by the terms of this Disclaimer.
             </p>
@@ -103,10 +120,30 @@ export default function DisclaimerPage() {
 
           <Section title="8. Contact">
             <p>For any questions regarding this Disclaimer, please reach out to us:</p>
-            <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100 text-sm">
+            <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100 text-sm space-y-1">
               <p className="font-semibold text-slate-700">Times Money</p>
-              <p>Email: legal@timesmoney.com</p>
-              <p>Phone: 1800-123-4567</p>
+
+              {settings?.supportEmail ? (
+                <p>
+                  Email:{' '}
+                  <a href={`mailto:${settings.supportEmail}`} className="text-brand-teal hover:underline">
+                    {settings.supportEmail}
+                  </a>
+                </p>
+              ) : (
+                <p className="text-slate-400 animate-pulse">Loading email...</p>
+              )}
+
+              {settings?.callingNo ? (
+                <p>
+                  Phone:{' '}
+                  <a href={`tel:${settings.callingNo}`} className="text-brand-teal hover:underline">
+                    {settings.callingNo}
+                  </a>
+                </p>
+              ) : (
+                <p className="text-slate-400 animate-pulse">Loading phone...</p>
+              )}
             </div>
           </Section>
 

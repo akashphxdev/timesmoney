@@ -21,6 +21,19 @@ interface Blog {
   subCategory: { name: string; slug: string } | null;
 }
 
+interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  shortDescription: string | null;
+  image: string | null;
+  provider: string | null;
+  interestRate: string | null;
+  minAmount: string | null;
+  maxAmount: string | null;
+  badge: string | null;
+  isBestSeller: boolean;
+}
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '');
 
 const fixContentImages = (html: string) => {
@@ -29,7 +42,91 @@ const fixContentImages = (html: string) => {
     .replace(/src="http:\/\/localhost:5000\/uploads\//g, `src="${BASE_URL}/uploads/`);
 };
 
-export default function BlogDetail({ blog }: { blog: Blog }) {
+const resolveImage = (src: string) => {
+  if (!src) return '';
+  if (src.startsWith('http')) return src;
+  return `${BASE_URL}${src.startsWith('/') ? '' : '/'}${src}`;
+};
+
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <span className="star-rating" aria-label={`${rating} out of 5`}>
+      {[1, 2, 3, 4, 5].map((s) => (
+        <span key={s} className={s <= Math.round(rating) ? 'star filled' : 'star'}>
+          ★
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function ProductCard({ product }: { product: Product }) {
+  const router = useRouter();
+  const img = product.image ? resolveImage(product.image) : null;
+
+  return (
+    <article
+      className="pfy-card"
+      onClick={() => router.push(`/products/${product.slug}`)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === 'Enter' && router.push(`/products/${product.slug}`)}
+    >
+      <div className="pfy-card-img-wrap">
+        {img ? (
+          <img src={img} alt={product.name} className="pfy-card-img" loading="lazy" />
+        ) : (
+          <div className="pfy-card-img-placeholder"><span>🛍️</span></div>
+        )}
+        {product.badge && (
+          <span className="pfy-discount-badge">{product.badge}</span>
+        )}
+        <div className="pfy-best-tag">✦ Best For You</div>
+      </div>
+
+      <div className="pfy-card-body">
+        <p className="pfy-card-name">{product.name}</p>
+
+        {product.provider && (
+          <p style={{ fontFamily: 'DM Sans', fontSize: 11, color: '#6b7280', margin: 0 }}>
+            {product.provider}
+          </p>
+        )}
+
+        {product.interestRate && (
+          <div className="pfy-card-price-row">
+            <span className="pfy-price-current">{product.interestRate}</span>
+            <span style={{ fontFamily: 'DM Sans', fontSize: 10, color: '#9ca3af' }}>interest</span>
+          </div>
+        )}
+
+        {product.minAmount && (
+          <p style={{ fontFamily: 'DM Sans', fontSize: 11, color: '#6b7280', margin: 0 }}>
+            Min: {product.minAmount}
+          </p>
+        )}
+
+        <button
+          className="pfy-view-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            router.push(`/products/${product.slug}`);
+          }}
+        >
+          View Product →
+        </button>
+      </div>
+    </article>
+  );
+}
+
+export default function BlogDetail({
+  blog,
+  relatedProducts = [],
+}: {
+  blog: Blog;
+  relatedProducts?: Product[];
+}) {
   const router = useRouter();
   const imgRef = useRef<HTMLImageElement>(null);
 
@@ -142,6 +239,42 @@ export default function BlogDetail({ blog }: { blog: Blog }) {
         )}
 
         <AdBanner page="BLOG_DETAIL" position="BOTTOM" className="mt-8" />
+
+        {/* ── Best For You Products ── */}
+        {relatedProducts.length > 0 && (
+          <section className="pfy-section">
+            <div className="pfy-header">
+              <div className="pfy-header-left">
+                <span className="pfy-eyebrow">✦ Curated For You</span>
+                <h2 className="pfy-title">Best picks from <em>{blog.category?.name}</em></h2>
+                <p className="pfy-subtitle">
+                  Hand-picked products that go perfectly with what you just read.
+                </p>
+              </div>
+            </div>
+
+            <div className="pfy-grid">
+              {relatedProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+
+            <div className="pfy-see-all-wrap">
+              <button
+                className="pfy-see-all-btn"
+                onClick={() =>
+                  router.push(
+                    blog.category?.slug
+                      ? `/products?category=${blog.category.slug}`
+                      : '/products'
+                  )
+                }
+              >
+                See all {blog.category?.name} products →
+              </button>
+            </div>
+          </section>
+        )}
 
         {/* Bottom CTA */}
         <div className="bottom-cta">
@@ -337,12 +470,10 @@ const blogStyles = `
     .article-content h4 { margin: 2em 0 0.6em; }
   }
 
-  /* Mobile heading sizes */
   .article-content h2 { font-size: 1.35rem; }
   .article-content h3 { font-size: 1.15rem; }
   .article-content h4 { font-size: 1rem; }
 
-  /* Tablet+ heading sizes */
   @media (min-width: 768px) {
     .article-content h2 { font-size: 1.7rem; }
     .article-content h3 { font-size: 1.35rem; }
@@ -357,7 +488,6 @@ const blogStyles = `
   .article-content a:hover { opacity: 0.8; }
   .article-content strong { font-weight: 600; color: #111827; }
 
-  /* Blockquote */
   .article-content blockquote {
     margin: 1.5em 0;
     padding: 16px 20px;
@@ -377,7 +507,6 @@ const blogStyles = `
     }
   }
 
-  /* Images */
   .article-content img {
     display: block;
     max-width: 100%;
@@ -398,7 +527,6 @@ const blogStyles = `
     }
   }
 
-  /* Lists — clear bullet/number styles */
   .article-content ul,
   .article-content ol {
     margin: 0 0 1.4em 0;
@@ -411,7 +539,6 @@ const blogStyles = `
 
   .article-content ul { list-style-type: disc; }
   .article-content ol { list-style-type: decimal; }
-
   .article-content ul ul   { list-style-type: circle; }
   .article-content ul ul ul { list-style-type: square; }
 
@@ -425,14 +552,12 @@ const blogStyles = `
     .article-content li { margin-bottom: 0.5em; font-size: 1.1rem; }
   }
 
-  /* Nested list indent */
   .article-content li > ul,
   .article-content li > ol {
     margin-top: 0.4em;
     margin-bottom: 0.4em;
   }
 
-  /* Tables */
   .article-content table {
     width: 100%;
     border-collapse: collapse;
@@ -462,7 +587,6 @@ const blogStyles = `
   }
   .article-content th { background: #f9fafb; font-weight: 600; color: #111827; }
 
-  /* Code blocks */
   .article-content pre {
     background: #1e1e1e;
     color: #d4d4d4;
@@ -535,6 +659,262 @@ const blogStyles = `
     .tag-pill { font-size: 12px; padding: 5px 12px; }
   }
   .tag-pill:hover { background: var(--bt-bg); color: var(--bt); border-color: var(--bt-border); }
+
+  /* ══════════════════════════════════════════
+     ── Best For You Section ──
+  ══════════════════════════════════════════ */
+  .pfy-section {
+    margin-top: 56px;
+    padding-top: 40px;
+    border-top: 2px solid #f0fdf4;
+    position: relative;
+  }
+  @media (min-width: 768px) { .pfy-section { margin-top: 72px; padding-top: 52px; } }
+
+  /* Subtle teal glow strip behind section */
+  .pfy-section::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 0;
+    width: 80px;
+    height: 2px;
+    background: var(--bt);
+    border-radius: 2px;
+  }
+
+  .pfy-header { margin-bottom: 28px; }
+  @media (min-width: 768px) { .pfy-header { margin-bottom: 36px; } }
+
+  .pfy-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--bt);
+    display: block;
+    margin-bottom: 8px;
+  }
+  @media (min-width: 768px) { .pfy-eyebrow { font-size: 11px; } }
+
+  .pfy-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.25;
+    margin: 0 0 8px;
+  }
+  .pfy-title em { font-style: italic; color: var(--bt); }
+  @media (min-width: 768px) { .pfy-title { font-size: 2rem; margin: 0 0 10px; } }
+
+  .pfy-subtitle {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.6;
+  }
+  @media (min-width: 768px) { .pfy-subtitle { font-size: 14px; } }
+
+  /* Grid */
+  .pfy-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  @media (min-width: 560px) { .pfy-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; } }
+  @media (min-width: 900px) { .pfy-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; } }
+
+  /* Card */
+  .pfy-card {
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    outline: none;
+    display: flex;
+    flex-direction: column;
+  }
+  .pfy-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(13, 148, 136, 0.12);
+    border-color: rgba(13, 148, 136, 0.25);
+  }
+  .pfy-card:focus-visible {
+    outline: 2px solid var(--bt);
+    outline-offset: 2px;
+  }
+
+  .pfy-card-img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #f9fafb;
+    overflow: hidden;
+  }
+
+  .pfy-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  .pfy-card:hover .pfy-card-img { transform: scale(1.04); }
+
+  .pfy-card-img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #f0fdf4, #f9fafb);
+  }
+
+  /* Discount badge */
+  .pfy-discount-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: #ef4444;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 100px;
+    letter-spacing: 0.03em;
+    z-index: 2;
+  }
+
+  /* Best For You tag */
+  .pfy-best-tag {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(13,148,136,0.92), rgba(13,148,136,0));
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 18px 10px 7px;
+    opacity: 0;
+    transition: opacity 0.22s ease;
+  }
+  .pfy-card:hover .pfy-best-tag { opacity: 1; }
+
+  /* Card body */
+  .pfy-card-body {
+    padding: 10px 11px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+  }
+  @media (min-width: 768px) { .pfy-card-body { padding: 12px 14px 14px; gap: 6px; } }
+
+  .pfy-card-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.4;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  @media (min-width: 768px) { .pfy-card-name { font-size: 13px; } }
+
+  /* Stars */
+  .pfy-card-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .star-rating { display: inline-flex; gap: 1px; }
+  .star { font-size: 11px; color: #d1d5db; }
+  .star.filled { color: #f59e0b; }
+  .pfy-review-count {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    color: #9ca3af;
+  }
+
+  /* Prices */
+  .pfy-card-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .pfy-price-current {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+  }
+  @media (min-width: 768px) { .pfy-price-current { font-size: 15px; } }
+  .pfy-price-original {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    color: #9ca3af;
+    text-decoration: line-through;
+  }
+
+  /* View button */
+  .pfy-view-btn {
+    margin-top: auto;
+    padding-top: 4px;
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--bt);
+    cursor: pointer;
+    text-align: left;
+    padding-left: 0;
+    transition: opacity 0.15s;
+  }
+  .pfy-view-btn:hover { opacity: 0.7; }
+  @media (min-width: 768px) { .pfy-view-btn { font-size: 12px; } }
+
+  /* See All */
+  .pfy-see-all-wrap {
+    margin-top: 28px;
+    display: flex;
+    justify-content: center;
+  }
+  @media (min-width: 768px) { .pfy-see-all-wrap { margin-top: 36px; } }
+
+  .pfy-see-all-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--bt);
+    background: transparent;
+    border: 1.5px solid var(--bt);
+    padding: 10px 24px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.01em;
+  }
+  @media (min-width: 768px) { .pfy-see-all-btn { font-size: 14px; padding: 12px 32px; } }
+  .pfy-see-all-btn:hover {
+    background: var(--bt);
+    color: white;
+    box-shadow: 0 4px 16px rgba(13,148,136,0.25);
+  }
 
   /* ── Bottom CTA ── */
   .bottom-cta { margin-top: 48px; text-align: center; }

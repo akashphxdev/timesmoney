@@ -24,7 +24,6 @@ export const metadata: Metadata = {
     icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='16' fill='%231e293b'/><text x='50' y='72' font-family='Georgia,serif' font-size='58' font-weight='bold' text-anchor='middle'><tspan fill='%23ffffff'>T</tspan><tspan fill='%23facc15'>₹</tspan></text></svg>",
   },
 
-  // ✅ Canonical URL — har page ka canonical auto set hoga
   alternates: {
     canonical: "https://timesmoney.in",
   },
@@ -86,18 +85,40 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+// ✅ Server-side fetch — ISR 1 hour (categories/settings zyada nahi badlte)
+async function getHeaderData() {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/web/header-data`,
+      { next: { revalidate: 3600 } }
+    );
+    if (!res.ok) return { categories: [], blogs: [], settings: null };
+    const json = await res.json();
+    return json.data;
+  } catch {
+    return { categories: [], blogs: [], settings: null };
+  }
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // ✅ Server pe fetch — har user ke liye fresh client call nahi hogi
+  const headerData = await getHeaderData();
+
   return (
     <html
       lang="en"
       className={`${dmSans.variable} ${dmSerif.variable} h-full antialiased`}
     >
       <body className="font-[var(--font-body)]">
-        <Navbar />
+        <Navbar
+          categories={headerData.categories}
+          blogs={headerData.blogs}
+          settings={headerData.settings}
+        />
         <WelcomeModal />
         {children}
         <Footer />

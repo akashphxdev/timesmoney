@@ -270,7 +270,7 @@ export default function TestimonialsPage() {
                 <AiOutlineDelete size={22} className="text-red-500" />
               </div>
               <h3 className="text-base font-bold text-gray-900">Delete Testimonial?</h3>
-              <p className="text-sm text-gray-400">Testimonial permanently delete ho jayega!</p>
+              <p className="text-sm text-gray-400">Are you sure you want to delete this testimonial? This action cannot be undone.</p>
             </div>
             <div className="flex items-center gap-3 px-6 pb-5">
               <button

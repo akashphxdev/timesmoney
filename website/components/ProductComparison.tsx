@@ -325,11 +325,10 @@ export default function ProductComparison() {
                         {/* Dynamic columns */}
                         {COLUMNS.map((col) => (
                           <td key={col.key} className={tdClass}>
-                            {col.key === 'provider' ? null : (
-                              product[col.key]
-                                ? <Pill label={String(product[col.key])} />
-                                : <span className="text-gray-300 text-xs">—</span>
-                            )}
+                            {product[col.key]
+                              ? <Pill label={String(product[col.key])} />
+                              : <span className="text-gray-300 text-xs">—</span>
+                            }
                           </td>
                         ))}
 

@@ -382,8 +382,8 @@ export default function CategoriesPage() {
               <h3 className="text-base font-bold text-gray-900">Delete?</h3>
               <p className="text-sm text-gray-400">
                 {deleteType === 'category'
-                  ? 'Category permanently delete ho jayegi!'
-                  : 'Sub-category permanently delete ho jayegi!'}
+                  ? 'Are you sure you want to delete this category? This action cannot be undone.'
+                  : 'Are you sure you want to delete this sub-category? This action cannot be undone.'}
               </p>
             </div>
             <div className="flex items-center gap-3 px-6 pb-5">

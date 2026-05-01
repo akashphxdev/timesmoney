@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { prisma } from '../config/db';
 import jwt from 'jsonwebtoken';
 import { CmsAdminRole } from '../generated/prisma';
 
@@ -45,4 +46,49 @@ export const authorizeRoles = (...roles: CmsAdminRole[]) => {
 
     next();
   };
+};
+
+export const maintenanceCheck = async (req: AdminRequest, res: Response, next: NextFunction) => {
+  try {
+    const settings = await prisma.cmsSettings.findUnique({
+      where:  { key: 'global' },
+      select: { maintenanceMode: true },
+    });
+
+    if (!settings?.maintenanceMode) return next();
+
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return res.status(503).json({
+        success: false, maintenance: true,
+        message: '🚧 Website is currently under maintenance. Please try again later.',
+      });
+    }
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
+        id: string; email: string; role: CmsAdminRole;
+      };
+
+      if (decoded.role === CmsAdminRole.SUPER_ADMIN) {
+        req.admin = decoded;
+        return next();
+      }
+
+      return res.status(503).json({
+        success: false, maintenance: true,
+        message: '🚧 Website is currently under maintenance. Please try again later.',
+      });
+
+    } catch {
+      return res.status(503).json({
+        success: false, maintenance: true,
+        message: '🚧 Website is currently under maintenance. Please try again later.',
+      });
+    }
+
+  } catch {
+    next();
+  }
 };

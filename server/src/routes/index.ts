@@ -1,3 +1,4 @@
+import { maintenanceCheck } from '../middleware/auth.middleware';
 import { Router, Request, Response } from 'express';
 import authRoutes from './adminRoutes/auth.routes';
 import adminRoutes from './adminRoutes/admin.routes';
@@ -12,12 +13,14 @@ import publicBlogRouter from './publicRoutes/public.blog.route';
 import dashboardRouter from './adminRoutes/dashboard.routes';
 import adRoutes from './adminRoutes/ad.routes';
 import adEventRoutes from './adminRoutes/ad-event.routes';
+import settingsRoutes from './adminRoutes/settings.routes';
 
 import headerRoutes from './publicRoutes/header.routes';
 import homeRouter from './publicRoutes/home.route';
 import publicProductRouter from './publicRoutes/product.route';
 import publicLeadRouter from './publicRoutes/lead.route'
 import publicAds from './publicRoutes/ad.route'
+import PublicsettingRoutes from './publicRoutes/settingRoutes';
 const router = Router();
 
 // Health Check
@@ -39,9 +42,9 @@ router.use('/leads', leadRoutes);
 router.use('/dashboard', dashboardRouter);
 router.use('/ads', adRoutes);
 router.use('/ad-events', adEventRoutes);
+router.use('/admin/settings', settingsRoutes);
 
-
-
+router.use(maintenanceCheck); // Apply maintenance mode check to all routes below
 // Web/Public Routes
 router.use('/web/header-data', headerRoutes);
 router.use('/web/blogs', publicBlogRouter);
@@ -49,6 +52,9 @@ router.use('/public/home', homeRouter);
 router.use('/public/products', publicProductRouter);
 router.use('/public/leads', publicLeadRouter);
 router.use('/public/ads' ,publicAds )
+router.use('/public/categories', settingsRoutes);
 router.use('/public', publicProductRouter);
+router.use('/public/settings', PublicsettingRoutes);
+
 
 export default router;

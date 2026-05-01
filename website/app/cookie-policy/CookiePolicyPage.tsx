@@ -1,6 +1,23 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import api from '@/lib/api';
+
+interface Settings {
+  callingNo: string;
+  supportEmail: string;
+}
 
 export default function CookiePolicyPage() {
+  const [settings, setSettings] = useState<Settings | null>(null);
+
+  useEffect(() => {
+    api.get('/public/settings')
+      .then(res => setSettings(res.data.data))
+      .catch(err => console.error('Settings fetch failed:', err));
+  }, []);
+
   return (
     <main className="min-h-screen bg-gray-50">
 
@@ -58,7 +75,6 @@ export default function CookiePolicyPage() {
 
           <Section title="2. Types of Cookies We Use">
             <p>We use the following categories of cookies on our platform:</p>
-
             <div className="mt-4 space-y-4">
               <CookieType
                 label="Strictly Necessary Cookies"
@@ -159,13 +175,31 @@ export default function CookiePolicyPage() {
           </Section>
 
           <Section title="8. Contact Us">
-            <p>
-              If you have any questions about our use of cookies or this Cookie Policy, please contact us at:
-            </p>
-            <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100 text-sm">
+            <p>If you have any questions about our use of cookies or this Cookie Policy, please contact us at:</p>
+            <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100 text-sm space-y-1">
               <p className="font-semibold text-slate-700">Times Money</p>
-              <p>Email: privacy@timesmoney.com</p>
-              <p>Phone: 1800-123-4567</p>
+
+              {settings?.supportEmail ? (
+                <p>
+                  Email:{' '}
+                  <a href={`mailto:${settings.supportEmail}`} className="text-brand-teal hover:underline">
+                    {settings.supportEmail}
+                  </a>
+                </p>
+              ) : (
+                <p className="text-slate-400 animate-pulse">Loading email...</p>
+              )}
+
+              {settings?.callingNo ? (
+                <p>
+                  Phone:{' '}
+                  <a href={`tel:${settings.callingNo}`} className="text-brand-teal hover:underline">
+                    {settings.callingNo}
+                  </a>
+                </p>
+              ) : (
+                <p className="text-slate-400 animate-pulse">Loading phone...</p>
+              )}
             </div>
           </Section>
 

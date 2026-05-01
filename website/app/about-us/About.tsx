@@ -1,12 +1,15 @@
+'use client';
+
 // app/about-us/page.tsx
 import Link from 'next/link';
-import {
-  Search,
-  Sun,
-  Shield,
-  Mail,
-  Phone,
-} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Search, Sun, Shield, Mail, Phone } from 'lucide-react';
+import api from '@/lib/api';
+
+interface Settings {
+  callingNo: string;
+  supportEmail: string;
+}
 
 const stats = [
   { value: '10M+', label: 'Monthly Users' },
@@ -45,6 +48,14 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 export default function AboutUsPage() {
+  const [settings, setSettings] = useState<Settings | null>(null);
+
+  useEffect(() => {
+    api.get('/public/settings')
+      .then(res => setSettings(res.data.data))
+      .catch(err => console.error('Settings fetch failed:', err));
+  }, []);
+
   return (
     <main className="min-h-screen bg-gray-50">
 
@@ -151,12 +162,35 @@ export default function AboutUsPage() {
             <p>We'd love to hear from you — whether it's a query, feedback, or a partnership enquiry.</p>
             <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100 text-sm space-y-2">
               <p className="font-semibold text-slate-700">Times Money</p>
-              <p className="flex items-center gap-2 text-slate-600">
-                <Mail size={14} /> hello@timesmoney.com
-              </p>
-              <p className="flex items-center gap-2 text-slate-600">
-                <Phone size={14} /> 1800-123-4567
-              </p>
+
+              {settings?.supportEmail ? (
+                <a
+                  href={`mailto:${settings.supportEmail}`}
+                  className="flex items-center gap-2 text-slate-600 hover:text-brand-teal transition-colors"
+                >
+                  <Mail size={14} />
+                  {settings.supportEmail}
+                </a>
+              ) : (
+                <p className="flex items-center gap-2 text-slate-400 animate-pulse">
+                  <Mail size={14} /> Loading email...
+                </p>
+              )}
+
+              {settings?.callingNo ? (
+                <a
+                  href={`tel:${settings.callingNo}`}
+                  className="flex items-center gap-2 text-slate-600 hover:text-brand-teal transition-colors"
+                >
+                  <Phone size={14} />
+                  {settings.callingNo}
+                </a>
+              ) : (
+                <p className="flex items-center gap-2 text-slate-400 animate-pulse">
+                  <Phone size={14} /> Loading phone...
+                </p>
+              )}
+
               <p className="text-slate-400 text-xs mt-1">Mon – Sat, 9:00 AM – 6:00 PM IST</p>
             </div>
           </Section>

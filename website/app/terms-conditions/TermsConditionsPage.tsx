@@ -1,6 +1,23 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import api from '@/lib/api';
+
+interface Settings {
+  callingNo: string;
+  supportEmail: string;
+}
 
 export default function TermsConditionsPage() {
+  const [settings, setSettings] = useState<Settings | null>(null);
+
+  useEffect(() => {
+    api.get('/public/settings')
+      .then(res => setSettings(res.data.data))
+      .catch(err => console.error('Settings fetch failed:', err));
+  }, []);
+
   return (
     <main className="min-h-screen bg-gray-50">
 
@@ -32,7 +49,7 @@ export default function TermsConditionsPage() {
 
           <Section title="1. Acceptance of Terms">
             <p>
-              By accessing timesmoney.com, you confirm that you are at least 18 years of age, have
+              By accessing timesmoney.in, you confirm that you are at least 18 years of age, have
               read and understood these Terms and Conditions, and agree to be legally bound by them.
             </p>
           </Section>
@@ -49,9 +66,7 @@ export default function TermsConditionsPage() {
           </Section>
 
           <Section title="3. Account Registration">
-            <p>
-              To access certain features, you may need to create an account. You are responsible for:
-            </p>
+            <p>To access certain features, you may need to create an account. You are responsible for:</p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
               <li>Maintaining the confidentiality of your login credentials</li>
               <li>All activities that occur under your account</li>
@@ -60,10 +75,7 @@ export default function TermsConditionsPage() {
           </Section>
 
           <Section title="4. Financial Products & Applications">
-            <p>
-              Times Money is a comparison platform. When you apply for a financial product through
-              our platform:
-            </p>
+            <p>Times Money is a comparison platform. When you apply for a financial product through our platform:</p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
               <li>Your application is subject to the terms of the respective bank or institution</li>
               <li>Approval is at the sole discretion of the lender</li>
@@ -133,10 +145,30 @@ export default function TermsConditionsPage() {
 
           <Section title="12. Contact Us">
             <p>For any questions about these Terms and Conditions, please contact us:</p>
-            <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100 text-sm">
+            <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100 text-sm space-y-1">
               <p className="font-semibold text-slate-700">Times Money</p>
-              <p>Email: legal@timesmoney.com</p>
-              <p>Phone: 1800-123-4567</p>
+
+              {settings?.supportEmail ? (
+                <p>
+                  Email:{' '}
+                  <a href={`mailto:${settings.supportEmail}`} className="text-brand-teal hover:underline">
+                    {settings.supportEmail}
+                  </a>
+                </p>
+              ) : (
+                <p className="text-slate-400 animate-pulse">Loading email...</p>
+              )}
+
+              {settings?.callingNo ? (
+                <p>
+                  Phone:{' '}
+                  <a href={`tel:${settings.callingNo}`} className="text-brand-teal hover:underline">
+                    {settings.callingNo}
+                  </a>
+                </p>
+              ) : (
+                <p className="text-slate-400 animate-pulse">Loading phone...</p>
+              )}
             </div>
           </Section>
 

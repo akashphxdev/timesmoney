@@ -1,5 +1,7 @@
 'use client';
 
+// Path: website/app/blog/BlogsPage.tsx
+
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import AdBanner from '@/components/ads/AdBanner';
@@ -23,6 +25,12 @@ interface Pagination {
   page: number;
   limit: number;
   totalPages: number;
+}
+
+// ✅ Props — server se initial data aayega
+interface BlogsPageProps {
+  initialBlogs: Blog[];
+  initialPagination: Pagination;
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '');
@@ -90,13 +98,18 @@ const topics = [
   },
 ];
 
-export default function BlogsPage() {
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [pagination, setPagination] = useState<Pagination | null>(null);
+export default function BlogsPage({ initialBlogs, initialPagination }: BlogsPageProps) {
+  // ✅ Initial state server se aaya hua data hai — pehli load pe blank nahi dikhega
+  const [blogs, setBlogs] = useState<Blog[]>(initialBlogs);
+  const [pagination, setPagination] = useState<Pagination>(initialPagination);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
+  // ✅ Page 1 ka data already hai server se, isliye loading false se start
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // ✅ Page 1 skip karo — server se already aa chuka hai
+    if (page === 1) return;
+
     const fetchBlogs = async () => {
       try {
         setLoading(true);
@@ -109,12 +122,12 @@ export default function BlogsPage() {
         setLoading(false);
       }
     };
+
     fetchBlogs();
   }, [page]);
 
   return (
     <main className="min-h-screen bg-gray-50">
-      
 
       {/* Hero Header */}
       <div className="bg-white border-b border-gray-100">
@@ -153,7 +166,7 @@ export default function BlogsPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
 
-        {/* Loading Skeleton */}
+        {/* Loading Skeleton — sirf page 2+ pe dikhega */}
         {loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
             {[...Array(9)].map((_, i) => (

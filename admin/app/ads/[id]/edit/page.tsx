@@ -52,7 +52,7 @@ export default function EditAdPage() {
     title: '',
     pages: [] as string[],
     positions: [] as string[],
-    size: 'BANNER_300x250',
+    size: '',
     customWidth: '',
     customHeight: '',
     link: '',
@@ -79,7 +79,7 @@ export default function EditAdPage() {
           title: ad.title || '',
           pages: ad.pages || [],
           positions: ad.positions || [],
-          size: ad.size || 'BANNER_300x250',
+          size: ad.size || '',
           customWidth: ad.customWidth ? String(ad.customWidth) : '',
           customHeight: ad.customHeight ? String(ad.customHeight) : '',
           link: ad.link || '',
@@ -127,17 +127,21 @@ export default function EditAdPage() {
     if (!form.title.trim()) errors.title = 'Title is required';
     if (form.pages.length === 0) errors.pages = 'At least one page is required';
     if (form.positions.length === 0) errors.positions = 'At least one position is required';
-    if (!existingImage && !newImage) errors.image = 'Ad image is required';
+    if (!form.size) errors.size = 'Size is required';
     if (form.size === 'CUSTOM') {
       if (!form.customWidth || Number(form.customWidth) <= 0)
         errors.customWidth = 'Width is required';
       if (!form.customHeight || Number(form.customHeight) <= 0)
         errors.customHeight = 'Height is required';
     }
+    if (!form.link.trim()) errors.link = 'Link URL is required';
+    if (!form.startDateTime) errors.startDateTime = 'Start date & time is required';
+    if (!form.endDateTime) errors.endDateTime = 'End date & time is required';
     if (form.startDateTime && form.endDateTime) {
       if (new Date(form.startDateTime) >= new Date(form.endDateTime))
         errors.endDateTime = 'End date must be after start date';
     }
+    if (!existingImage && !newImage) errors.image = 'Ad image is required';
     return errors;
   };
 
@@ -250,7 +254,7 @@ export default function EditAdPage() {
               <FieldError field="title" />
             </div>
 
-            {/* Pages — Checkboxes */}
+            {/* Pages */}
             <div>
               <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2 block">
                 Pages <span className="text-red-400">*</span>
@@ -271,7 +275,7 @@ export default function EditAdPage() {
               <FieldError field="pages" />
             </div>
 
-            {/* Positions — Checkboxes */}
+            {/* Positions */}
             <div>
               <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2 block">
                 Positions <span className="text-red-400">*</span>
@@ -295,20 +299,22 @@ export default function EditAdPage() {
             {/* Size */}
             <div>
               <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5 block">
-                Size
+                Size <span className="text-red-400">*</span>
               </label>
               <select
                 value={form.size}
                 onChange={(e) => {
                   setForm({ ...form, size: e.target.value, customWidth: '', customHeight: '' });
-                  setFieldErrors((p) => ({ ...p, customWidth: '', customHeight: '' }));
+                  setFieldErrors((p) => ({ ...p, size: '', customWidth: '', customHeight: '' }));
                 }}
                 className={inputClass('size')}
               >
+                <option value="">-- Select Size --</option>
                 {AD_SIZES.map((s) => (
                   <option key={s} value={s}>{s.replace('BANNER_', '')}</option>
                 ))}
               </select>
+              <FieldError field="size" />
             </div>
 
             {/* Custom Size */}
@@ -354,36 +360,46 @@ export default function EditAdPage() {
             {/* Link */}
             <div>
               <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5 block">
-                Link URL
+                Link URL <span className="text-red-400">*</span>
               </label>
               <input
                 type="url"
                 placeholder="https://example.com"
                 value={form.link}
-                onChange={(e) => setForm({ ...form, link: e.target.value })}
+                onChange={(e) => {
+                  setForm({ ...form, link: e.target.value });
+                  if (e.target.value) setFieldErrors((p) => ({ ...p, link: '' }));
+                }}
                 className={inputClass('link')}
               />
+              <FieldError field="link" />
             </div>
           </div>
 
           {/* Schedule */}
           <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
-            <h3 className="text-sm font-semibold text-gray-700">Schedule (Optional)</h3>
+            <h3 className="text-sm font-semibold text-gray-700">
+              Schedule <span className="text-red-400">*</span>
+            </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5 block">
-                  Start Date & Time
+                  Start Date & Time <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="datetime-local"
                   value={form.startDateTime}
-                  onChange={(e) => setForm({ ...form, startDateTime: e.target.value })}
+                  onChange={(e) => {
+                    setForm({ ...form, startDateTime: e.target.value });
+                    if (e.target.value) setFieldErrors((p) => ({ ...p, startDateTime: '' }));
+                  }}
                   className={inputClass('startDateTime')}
                 />
+                <FieldError field="startDateTime" />
               </div>
               <div>
                 <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5 block">
-                  End Date & Time
+                  End Date & Time <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="datetime-local"
@@ -406,16 +422,25 @@ export default function EditAdPage() {
 
           <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-4">
             <h3 className="text-sm font-semibold text-gray-700">Publish</h3>
+
+            {/* Fixed Toggle */}
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Active</span>
               <button
                 type="button"
                 onClick={() => setForm({ ...form, active: !form.active })}
-                className={`relative w-11 h-6 rounded-full transition-colors ${form.active ? 'bg-green-500' : 'bg-gray-300'}`}
+                className={`relative inline-flex items-center w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none ${
+                  form.active ? 'bg-green-500' : 'bg-gray-300'
+                }`}
               >
-                <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.active ? 'translate-x-6' : 'translate-x-1'}`} />
+                <span
+                  className={`inline-block w-4 h-4 bg-white rounded-full shadow transform transition-transform duration-200 ${
+                    form.active ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
               </button>
             </div>
+
             <div>
               <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5 block">
                 Sort Order

@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const lead_controller_1 = require("../../controllers/admin/lead.controller");
+const auth_middleware_1 = require("../../middleware/auth.middleware");
+const router = (0, express_1.Router)();
+router.get('/', auth_middleware_1.isAuthenticated, lead_controller_1.getAll);
+router.get('/:id', auth_middleware_1.isAuthenticated, lead_controller_1.getOne);
+router.patch('/:id', auth_middleware_1.isAuthenticated, (0, auth_middleware_1.authorizeRoles)('SUPER_ADMIN', 'EDITOR'), lead_controller_1.update);
+router.delete('/:id', auth_middleware_1.isAuthenticated, (0, auth_middleware_1.authorizeRoles)('SUPER_ADMIN'), lead_controller_1.remove);
+exports.default = router;

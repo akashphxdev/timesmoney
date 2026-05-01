@@ -97,7 +97,7 @@ export default function AdsPage() {
 
   const formatSize = (ad: Ad) => {
     if (ad.size === 'CUSTOM' && ad.customWidth && ad.customHeight) {
-      return `${ad.customWidth}x${ad.customHeight}`;
+      return `${ad.customWidth}×${ad.customHeight}`;
     }
     return ad.size.replace('BANNER_', '');
   };
@@ -149,18 +149,18 @@ export default function AdsPage() {
           <div className="py-16 text-center text-sm text-gray-400">Loading...</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full table-fixed min-w-[1000px]">
+            <table className="w-full" style={{ minWidth: '900px' }}>
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-100">
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider w-16">Image</th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider w-40">Title</th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider w-48">Pages</th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider w-44">Positions</th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider w-32">Size</th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider w-16">Events</th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider w-28">Status</th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider w-28">Date</th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider w-24">Actions</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider" style={{ width: '52px' }}>Img</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider" style={{ width: '160px' }}>Title</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider" style={{ width: '200px' }}>Pages</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider" style={{ width: '160px' }}>Positions</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider" style={{ width: '100px' }}>Size</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider" style={{ width: '64px' }}>Events</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider" style={{ width: '90px' }}>Status</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider" style={{ width: '100px' }}>Date</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider" style={{ width: '80px' }}>Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -172,38 +172,38 @@ export default function AdsPage() {
                   </tr>
                 ) : (
                   filtered.map((ad) => (
-                    <tr key={ad.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={ad.id} className="hover:bg-gray-50/70 transition-colors">
 
                       {/* Image */}
-                      <td className="px-4 py-4">
+                      <td className="px-4 py-3">
                         {ad.image ? (
                           <img
                             src={`${process.env.NEXT_PUBLIC_SERVER_URL}${ad.image}`}
                             alt={ad.title}
-                            className="w-10 h-10 rounded-lg object-cover"
+                            className="w-9 h-9 rounded-lg object-cover"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 text-xs">
-                            No img
+                          <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 text-[10px]">
+                            N/A
                           </div>
                         )}
                       </td>
 
                       {/* Title */}
-                      <td className="px-4 py-4">
-                        <p className="text-sm font-semibold text-gray-900 truncate">{ad.title}</p>
+                      <td className="px-4 py-3">
+                        <p className="text-sm font-semibold text-gray-900 truncate max-w-[140px]">{ad.title}</p>
                         {ad.link && (
-                          <p className="text-xs text-gray-400 mt-0.5 truncate">{ad.link}</p>
+                          <p className="text-[11px] text-gray-400 mt-0.5 truncate max-w-[140px]">{ad.link}</p>
                         )}
                       </td>
 
-                      {/* Pages — multiple badges */}
-                      <td className="px-4 py-4">
+                      {/* Pages */}
+                      <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-1">
                           {ad.pages.map((page) => (
                             <span
                               key={page}
-                              className={`text-xs font-medium px-2 py-0.5 border rounded-full ${PAGE_COLORS[page] || 'bg-gray-100 text-gray-500 border-gray-200'}`}
+                              className={`text-[10px] font-medium px-1.5 py-0.5 border rounded-full whitespace-nowrap ${PAGE_COLORS[page] || 'bg-gray-100 text-gray-500 border-gray-200'}`}
                             >
                               {page.replace(/_/g, ' ')}
                             </span>
@@ -211,13 +211,13 @@ export default function AdsPage() {
                         </div>
                       </td>
 
-                      {/* Positions — multiple badges */}
-                      <td className="px-4 py-4">
+                      {/* Positions */}
+                      <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-1">
                           {ad.positions.map((pos) => (
                             <span
                               key={pos}
-                              className="text-xs font-medium px-2 py-0.5 bg-gray-100 text-gray-500 border border-gray-200 rounded-full"
+                              className="text-[10px] font-medium px-1.5 py-0.5 bg-gray-100 text-gray-500 border border-gray-200 rounded-full whitespace-nowrap"
                             >
                               {pos.replace(/_/g, ' ')}
                             </span>
@@ -226,54 +226,58 @@ export default function AdsPage() {
                       </td>
 
                       {/* Size */}
-                      <td className="px-4 py-4 text-xs text-gray-400 truncate">
-                        {formatSize(ad)}
+                      <td className="px-4 py-3">
+                        <span className="text-xs text-gray-500 font-medium">{formatSize(ad)}</span>
                       </td>
 
-                      {/* Events count */}
-                      <td className="px-4 py-4 text-sm text-gray-500">
-                        {ad._count.events}
+                      {/* Events */}
+                      <td className="px-4 py-3">
+                        <span className="text-xs text-gray-500">{ad._count.events}</span>
                       </td>
 
                       {/* Status toggle */}
-                      <td className="px-4 py-4">
+                      <td className="px-4 py-3">
                         <button
                           onClick={() => handleToggle(ad)}
                           disabled={togglingId === ad.id}
                           title={`Click to ${ad.active ? 'deactivate' : 'activate'}`}
-                          className={`text-xs font-medium px-2.5 py-1 border rounded-full transition-opacity cursor-pointer hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-50 ${
-                            ad.active
-                              ? 'bg-green-50 text-green-600 border-green-100'
-                              : 'bg-gray-100 text-gray-500 border-gray-200'
+                          className={`relative inline-flex items-center w-9 h-5 rounded-full transition-colors duration-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
+                            ad.active ? 'bg-green-500' : 'bg-gray-300'
                           }`}
                         >
-                          {togglingId === ad.id ? '...' : ad.active ? 'Active' : 'Inactive'}
+                          <span
+                            className={`inline-block w-3.5 h-3.5 bg-white rounded-full shadow transform transition-transform duration-200 ${
+                              ad.active ? 'translate-x-4' : 'translate-x-0.5'
+                            }`}
+                          />
                         </button>
                       </td>
 
                       {/* Date */}
-                      <td className="px-4 py-4 text-sm text-gray-400">
-                        {new Date(ad.createdAt).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
+                      <td className="px-4 py-3">
+                        <span className="text-xs text-gray-400">
+                          {new Date(ad.createdAt).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </span>
                       </td>
 
                       {/* Actions */}
-                      <td className="px-4 py-4">
-                        <div className="flex items-center gap-2">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1.5">
                           <Link
                             href={`/ads/${ad.id}/edit`}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-100 transition-colors"
+                            className="w-7 h-7 flex items-center justify-center rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-100 transition-colors"
                           >
-                            <AiOutlineEdit size={15} />
+                            <AiOutlineEdit size={13} />
                           </Link>
                           <button
                             onClick={() => setDeleteId(ad.id)}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                            className="w-7 h-7 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
                           >
-                            <AiOutlineDelete size={15} />
+                            <AiOutlineDelete size={13} />
                           </button>
                         </div>
                       </td>
@@ -296,7 +300,7 @@ export default function AdsPage() {
                 <AiOutlineDelete size={22} className="text-red-500" />
               </div>
               <h3 className="text-base font-bold text-gray-900">Delete Ad?</h3>
-              <p className="text-sm text-gray-400">Ad aur uski saari events delete ho jayengi!</p>
+              <p className="text-sm text-gray-400">Are you sure you want to delete this ad? This action cannot be undone.</p>
             </div>
             <div className="flex items-center gap-3 px-6 pb-5">
               <button
